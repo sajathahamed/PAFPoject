@@ -53,8 +53,10 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Don't retry refresh endpoint to avoid infinite loop
       if (originalRequest.url === '/auth/refresh') {
-        // Refresh failed, redirect to login
-        window.location.href = '/login';
+        // Refresh failed, redirect to login IF not already there
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/oauth-callback') {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 
@@ -73,14 +75,16 @@ axiosInstance.interceptors.response.use(
       try {
         // Attempt to refresh the token
         await axiosInstance.post('/auth/refresh');
-        
+
         // Token refreshed successfully, process queue and retry
         processQueue(null);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         // Refresh failed, clear queue and redirect to login
         processQueue(refreshError);
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/oauth-callback') {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

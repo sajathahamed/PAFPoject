@@ -2,6 +2,7 @@ package com.smartcampus.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 /**
  * Main application entry point for Smart Campus Operations Hub - Auth Module.
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @version 1.0.0
  */
 @SpringBootApplication
+@EnableMongoAuditing
 public class SmartCampusAuthApplication {
 
     public static void main(String[] args) {

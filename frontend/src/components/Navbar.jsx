@@ -10,7 +10,7 @@ import useAuth from '../hooks/useAuth';
  * - Technician: Work Orders
  */
 const Navbar = () => {
-  const { user, isAuthenticated, logout, isAdmin, isTechnician } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin, isTechnician, isStudent, isLecturer } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -44,6 +44,15 @@ const Navbar = () => {
             <li>
               <Link to="/admin/users" className="nav-link">
                 Manage Users
+              </Link>
+            </li>
+          )}
+
+          {/* Student/Lecturer - Booking options */}
+          {(isStudent() || isLecturer()) && (
+            <li>
+              <Link to="/bookings" className="nav-link">
+                My Bookings
               </Link>
             </li>
           )}

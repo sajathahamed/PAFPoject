@@ -1,6 +1,8 @@
 package com.smartcampus.auth.controller;
 
+import com.smartcampus.auth.dto.LoginRequest;
 import com.smartcampus.auth.dto.MessageResponse;
+import com.smartcampus.auth.dto.RegisterRequest;
 import com.smartcampus.auth.dto.TokenResponse;
 import com.smartcampus.auth.dto.UserDTO;
 import com.smartcampus.auth.entity.User;
@@ -9,8 +11,10 @@ import com.smartcampus.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +35,28 @@ public class AuthController {
     private final AuthService authService;
 
     /**
+     * Register a new user with email and password.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> register(@Valid @RequestBody RegisterRequest request) {
+        log.info("Received registration request for email: {}", request.getEmail());
+        User user = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.fromEntity(user));
+    }
+
+    /**
+     * Login user with email and password.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+        log.debug("Received login request for email: {}", request.getEmail());
+        TokenResponse tokenResponse = authService.login(request, response);
+        return ResponseEntity.ok(tokenResponse);
+    }
+
+    /**
      * Get the currently authenticated user's profile.
      * 
      * @return UserDTO with user profile and role
@@ -38,6 +64,9 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         User user = authService.getCurrentUser();
+        if (user == null) {
+            return ResponseEntity.noContent().build();
+        }
         log.debug("Fetching current user: {}", user.getEmail());
         return ResponseEntity.ok(UserDTO.fromEntity(user));
     }

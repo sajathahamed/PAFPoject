@@ -1,32 +1,42 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 /**
- * Login page with Google OAuth2 authentication.
- * 
- * Features:
- * - Google Sign-In button
- * - Redirects authenticated users to dashboard
- * - Shows any authentication errors
- * - Preserves intended destination after login
+ * Login page with both local and Google OAuth2 authentication.
  */
 const LoginPage = () => {
-  const { isAuthenticated, loading, error, login } = useAuth();
+  const { isAuthenticated, loading, error, login, loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the intended destination from state, default to dashboard
+  // Form state
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
   const from = location.state?.from?.pathname || '/dashboard';
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !loading) {
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, loading, navigate, from]);
 
-  // Show loading while checking auth
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(formData.email, formData.password);
+    } catch (err) {
+      // Error is handled by AuthContext
+    }
+  };
+
   if (loading) {
     return (
       <div className="login-container">
@@ -40,30 +50,56 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Logo/Icon */}
         <div className="login-logo">🏫</div>
-        
-        {/* Title */}
         <h1 className="login-title">Smart Campus</h1>
         <p className="login-subtitle">Operations Hub</p>
 
-        {/* Error message */}
-        {error && (
-          <div className="alert alert-error mb-2">
-            {error}
-          </div>
-        )}
+        {error && <div className="alert alert-error mb-2">{error}</div>}
 
-        {/* Google Sign-In Button */}
-        <button onClick={login} className="btn btn-google" style={{ width: '100%' }}>
+        <form onSubmit={handleSubmit} className="mb-2">
+          <div className="form-group mb-1">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="form-input"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="email@example.com"
+            />
+          </div>
+          <div className="form-group mb-2">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="form-input"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="••••••••"
+            />
+          </div>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+            Sign In
+          </button>
+        </form>
+
+        <div className="text-center mb-2">
+          <p style={{ fontSize: '14px' }}>
+            Don't have an account? <Link to="/register" className="btn-link">Register</Link>
+          </p>
+        </div>
+
+        <div className="divider mb-2">
+          <span>OR</span>
+        </div>
+
+        <button onClick={loginWithGoogle} className="btn btn-google" style={{ width: '100%' }}>
           <GoogleIcon />
           Sign in with Google
         </button>
-
-        {/* Info text */}
-        <p className="mt-2" style={{ fontSize: '12px', color: '#666' }}>
-          Use your university Google account to sign in.
-        </p>
       </div>
     </div>
   );

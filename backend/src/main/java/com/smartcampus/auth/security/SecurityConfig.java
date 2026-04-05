@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -50,57 +52,40 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // Disable CSRF - not needed for stateless JWT authentication
-            .csrf(AbstractHttpConfigurer::disable)
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.sessionManagement(session -> 
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        
+        // OAuth2 Login Configuration
+        http.oauth2Login(oauth2 -> oauth2
+            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+            .successHandler(oAuth2SuccessHandler)
+        );
+
+        // API Endpoint Authorization
+        http.authorizeHttpRequests(auth -> auth
+            // Public endpoints
+            .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/callback").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             
-            // Enable CORS with custom configuration
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Protected endpoints
+            .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout").authenticated()
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/student/**").hasRole("STUDENT")
+            .requestMatchers("/api/lecturer/**").hasRole("LECTURER")
+            .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
             
-            // Stateless session - no server-side session storage
-            .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            
-            // Configure authorization rules
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints - OAuth2 flows
-                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                
-                // Public auth endpoints
-                .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/api/auth/logout").permitAll()
-                
-                // Admin-only endpoints
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
-                
-                // All other API endpoints require authentication
-                .requestMatchers("/api/**").authenticated()
-                
-                // Allow all other requests (static resources, etc.)
-                .anyRequest().permitAll()
-            )
-            
-            // Handle authentication errors - return 401 instead of redirect
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            )
-            
-            // Configure OAuth2 login
-            .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> 
-                    userInfo.userService(customOAuth2UserService))
-                .successHandler(oAuth2SuccessHandler)
-                .failureHandler((request, response, exception) -> {
-                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    response.setContentType("application/json");
-                    response.getWriter().write(
-                        "{\"error\": \"OAuth2 authentication failed\", \"status\": 401}"
-                    );
-                })
-            )
-            
-            // Add JWT filter before UsernamePasswordAuthenticationFilter
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            // Default: authenticate everything else
+            .anyRequest().authenticated()
+        );
+        
+        // Handle unauthorized attempts - redirect to login or return 401
+        http.exceptionHandling(exceptions -> exceptions
+            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+        );
+        
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -145,5 +130,10 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

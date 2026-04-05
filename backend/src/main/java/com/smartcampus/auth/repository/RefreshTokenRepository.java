@@ -2,10 +2,8 @@ package com.smartcampus.auth.repository;
 
 import com.smartcampus.auth.entity.RefreshToken;
 import com.smartcampus.auth.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.Optional;
  * Provides methods for token lookup, revocation, and cleanup.
  */
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+public interface RefreshTokenRepository extends MongoRepository<RefreshToken, String> {
 
     /**
      * Find a refresh token by its token value.
@@ -44,15 +42,11 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     List<RefreshToken> findByUser(User user);
 
     /**
-     * Revoke all refresh tokens for a user.
-     * Used for logout-all-devices functionality.
-     * 
-     * @param user the user whose tokens should be revoked
-     * @return number of tokens revoked
+     * Unused since MongoDB doesn't do direct update queries easily on repos.
+     * Use a service to delete or find-and-modify.
+     * Keeping signature if needed.
      */
-    @Modifying
-    @Query("UPDATE RefreshToken rt SET rt.revoked = true WHERE rt.user = :user AND rt.revoked = false")
-    int revokeAllByUser(@Param("user") User user);
+    void deleteByUserAndRevokedFalse(User user);
 
     /**
      * Delete all refresh tokens for a user.
@@ -66,7 +60,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      * 
      * @return number of tokens deleted
      */
-    @Modifying
-    @Query("DELETE FROM RefreshToken rt WHERE rt.revoked = true OR rt.expiresAt < CURRENT_TIMESTAMP")
-    int deleteExpiredAndRevokedTokens();
+    void deleteByRevokedTrueOrExpiresAtBefore(java.time.LocalDateTime date);
 }

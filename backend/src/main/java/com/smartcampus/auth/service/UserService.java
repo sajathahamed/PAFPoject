@@ -1,11 +1,13 @@
 package com.smartcampus.auth.service;
 
+import com.smartcampus.auth.dto.AdminUserCreateRequest;
 import com.smartcampus.auth.entity.Role;
 import com.smartcampus.auth.entity.User;
 import com.smartcampus.auth.exception.ResourceNotFoundException;
 import com.smartcampus.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Get all users in the system.
@@ -45,7 +48,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional(readOnly = true)
-    public User getUserById(Long id) {
+    public User getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
@@ -60,7 +63,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional
-    public User updateUserRole(Long userId, Role newRole) {
+    public User updateUserRole(String userId, Role newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -94,5 +97,30 @@ public class UserService {
     @Transactional(readOnly = true)
     public long countUsers() {
         return userRepository.count();
+    }
+
+    /**
+     * Create a new user (Admin only).
+     * 
+     * @param request the user details
+     * @return the created user
+     */
+    @Transactional
+    public User createUser(AdminUserCreateRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already registered: " + request.getEmail());
+        }
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .provider("LOCAL")
+                .providerId(request.getEmail())
+                .build();
+
+        log.info("Admin created new user: {} with role {}", user.getEmail(), user.getRole());
+        return userRepository.save(user);
     }
 }

@@ -1,8 +1,16 @@
 package com.smartcampus.auth.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -14,11 +22,7 @@ import java.time.LocalDateTime;
  * - Multiple device session management
  * - Token rotation for security
  */
-@Entity
-@Table(name = "refresh_tokens", indexes = {
-    @Index(name = "idx_refresh_token_token", columnList = "token"),
-    @Index(name = "idx_refresh_token_user_id", columnList = "user_id")
-})
+@Document(collection = "refresh_tokens")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,39 +31,40 @@ import java.time.LocalDateTime;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     /**
      * The refresh token value (UUID string).
      * Used to obtain new access tokens.
      */
-    @Column(nullable = false, unique = true, length = 255)
+    @Indexed(unique = true)
+    @Field("token")
     private String token;
 
     /**
      * User associated with this refresh token.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
+    @Indexed
+    @Field("user")
     private User user;
 
     /**
      * Expiration timestamp for this token.
      */
-    @Column(name = "expires_at", nullable = false)
+    @Field("expires_at")
     private LocalDateTime expiresAt;
 
     /**
      * Flag indicating if this token has been revoked.
      * Revocation happens on logout or token rotation.
      */
-    @Column(nullable = false)
+    @Field("revoked")
     @Builder.Default
     private Boolean revoked = false;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @Field("created_at")
     private LocalDateTime createdAt;
 
     /**
