@@ -1,13 +1,18 @@
 package com.smartcampus.controller;
 
+import com.smartcampus.model.Ticket;
 import com.smartcampus.model.User;
+import com.smartcampus.repository.TicketRepository;
 import com.smartcampus.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +30,10 @@ import java.util.Map;
 public class TestController {
 
     private final UserRepository userRepository;
+    private final TicketRepository ticketRepository;
+
+    @Value("${technician.test.email}")
+    private String technicianTestEmail;
 
     /** Confirms MongoDB is reachable and returns total user count. */
     @GetMapping("/db")
@@ -61,5 +70,64 @@ public class TestController {
                 .toList();
 
         return ResponseEntity.ok(safe);
+    }
+
+    /**
+     * Browser-friendly ticket check endpoint.
+     *
+     * Examples:
+     *   GET /test/technician/tickets
+     *   GET /test/technician/tickets?status=IN_PROGRESS
+     *   GET /test/technician/tickets?status=RESOLVED
+     *   GET /test/technician/tickets?email=easytech6727@gmail.com
+     */
+    @GetMapping("/technician/tickets")
+    public ResponseEntity<?> technicianTickets(
+        @RequestParam(defaultValue = "ALL") String status,
+        @RequestParam(required = false) String email
+    ) {
+    String targetEmail = (email == null || email.isBlank())
+        ? technicianTestEmail
+        : email.trim();
+
+    User technician = userRepository.findByEmail(targetEmail)
+        .orElse(null);
+
+    if (technician == null) {
+        return ResponseEntity.ok(Map.of(
+            "status", "not_found",
+            "message", "No user found for email: " + targetEmail,
+            "tickets", List.of()
+        ));
+    }
+
+    List<Ticket> tickets = "ALL".equalsIgnoreCase(status)
+        ? ticketRepository.findByAssignedTechnicianId(technician.getId())
+        : ticketRepository.findByAssignedTechnicianIdAndStatus(
+            technician.getId(), status.toUpperCase());
+
+    List<Map<String, Object>> payload = tickets.stream()
+        .sorted(Comparator.comparing(Ticket::getUpdatedAt,
+            Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+        .map(t -> Map.<String, Object>of(
+            "id", t.getId() != null ? t.getId() : "",
+            "title", t.getTitle() != null ? t.getTitle() : "",
+            "category", t.getCategory() != null ? t.getCategory() : "",
+            "priority", t.getPriority() != null ? t.getPriority() : "",
+            "status", t.getStatus() != null ? t.getStatus() : "",
+            "description", t.getDescription() != null ? t.getDescription() : "",
+            "resolutionNote", t.getResolutionNote() != null ? t.getResolutionNote() : "",
+            "createdAt", t.getCreatedAt() != null ? t.getCreatedAt().toString() : "",
+            "updatedAt", t.getUpdatedAt() != null ? t.getUpdatedAt().toString() : ""
+        ))
+        .toList();
+
+    return ResponseEntity.ok(Map.of(
+        "technicianEmail", technician.getEmail(),
+        "technicianName", technician.getName() != null ? technician.getName() : "",
+        "filter", status.toUpperCase(),
+        "count", payload.size(),
+        "tickets", payload
+    ));
     }
 }
