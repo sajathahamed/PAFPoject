@@ -9,7 +9,8 @@ package com.smartcampus.auth.entity;
  * - TECHNICIAN: Maintenance staff with work order access
  */
 public enum Role {
-    USER,
-    ADMIN,
-    TECHNICIAN
+    STUDENT,
+    LECTURER,
+    TECHNICIAN,
+    ADMIN
 }

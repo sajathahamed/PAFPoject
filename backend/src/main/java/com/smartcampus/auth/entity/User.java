@@ -1,9 +1,18 @@
 package com.smartcampus.auth.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -13,10 +22,9 @@ import java.time.LocalDateTime;
  * Users are created automatically upon first OAuth2 login.
  * Default role is USER; ADMIN can promote users to other roles.
  */
-@Entity
-@Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email"),
-    @UniqueConstraint(columnNames = {"provider", "provider_id"})
+@Document(collection = "users")
+@CompoundIndexes({
+    @CompoundIndex(name = "provider_idx", def = "{'provider': 1, 'providerId': 1}", unique = true)
 })
 @Getter
 @Setter
@@ -26,48 +34,50 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Indexed(unique = true)
+    @Field("email")
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Field("name")
     private String name;
 
-    @Column(name = "profile_picture", length = 500)
+    @Field("profile_picture")
     private String profilePicture;
 
+    @Field("password")
+    private String password;
+
     /**
-     * OAuth2 provider name (e.g., "GOOGLE")
+     * OAuth2 provider name (e.g., "GOOGLE", "LOCAL")
      */
-    @Column(nullable = false, length = 50)
+    @Field("provider")
     private String provider;
 
     /**
      * Unique identifier from the OAuth2 provider (e.g., Google's 'sub' claim)
      */
-    @Column(name = "provider_id", nullable = false, length = 255)
+    @Field("provider_id")
     private String providerId;
 
     /**
      * User's role determining access permissions.
      * Defaults to USER on first login.
      */
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Field("role")
     @Builder.Default
-    private Role role = Role.USER;
+    private Role role = Role.STUDENT;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @Field("created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "last_login_at")
+    @Field("last_login_at")
     private LocalDateTime lastLoginAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
+    @LastModifiedDate
+    @Field("updated_at")
     private LocalDateTime updatedAt;
 
     /**

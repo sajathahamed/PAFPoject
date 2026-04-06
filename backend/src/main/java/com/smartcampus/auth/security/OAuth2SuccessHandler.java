@@ -49,7 +49,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException, ServletException {
         
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Long userId = oAuth2User.getAttribute("userId");
+        String userId = oAuth2User.getAttribute("userId");
 
         if (userId == null) {
             log.error("User ID not found in OAuth2User attributes");

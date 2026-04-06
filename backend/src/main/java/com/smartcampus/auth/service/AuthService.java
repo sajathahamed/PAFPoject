@@ -1,7 +1,10 @@
 package com.smartcampus.auth.service;
 
+import com.smartcampus.auth.dto.LoginRequest;
+import com.smartcampus.auth.dto.RegisterRequest;
 import com.smartcampus.auth.dto.TokenResponse;
 import com.smartcampus.auth.entity.RefreshToken;
+import com.smartcampus.auth.entity.Role;
 import com.smartcampus.auth.entity.User;
 import com.smartcampus.auth.exception.InvalidTokenException;
 import com.smartcampus.auth.exception.ResourceNotFoundException;
@@ -15,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,21 +41,68 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.refresh-token.expiration}")
     private long refreshTokenExpiration;
 
     /**
+     * Register a new user with email and password.
+     */
+    @Transactional
+    public User register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .name(request.getName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .provider("LOCAL")
+                .providerId(request.getEmail())
+                .role(Role.STUDENT)
+                .build();
+
+        log.info("New user registered: {}", user.getEmail());
+        return userRepository.save(user);
+    }
+
+    /**
+     * Login user with email and password.
+     */
+    @Transactional
+    public TokenResponse login(LoginRequest request, HttpServletResponse response) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidTokenException("Invalid email or password"));
+
+        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidTokenException("Invalid email or password");
+        }
+
+        user.updateLastLogin();
+        userRepository.save(user);
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user);
+        String refreshToken = generateAndStoreRefreshToken(user);
+
+        addTokenCookie(response, "accessToken", accessToken, 15 * 60);
+        addTokenCookie(response, "refreshToken", refreshToken, 7 * 24 * 60 * 60);
+
+        log.info("User logged in: {}", user.getEmail());
+        return new TokenResponse(accessToken, "Bearer", 900);
+    }
+
+    /**
      * Get the currently authenticated user from the security context.
      * 
-     * @return the authenticated User entity
-     * @throws ResourceNotFoundException if user is not found or not authenticated
+     * @return the authenticated User entity, or null if not authenticated
      */
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResourceNotFoundException("No authenticated user found");
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null;
         }
 
         Object principal = authentication.getPrincipal();
@@ -60,7 +111,12 @@ public class AuthService {
             return (User) principal;
         }
         
-        throw new ResourceNotFoundException("User not found in security context");
+        // If it's a string (email from the token), find it in DB
+        if (principal instanceof String) {
+            return userRepository.findByEmail((String) principal).orElse(null);
+        }
+        
+        return null;
     }
 
     /**

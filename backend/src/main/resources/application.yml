@@ -7,23 +7,11 @@ spring:
     name: smart-campus-auth
   
   # =============================================================================
-  # Database Configuration (MySQL)
+  # Database Configuration (MongoDB)
   # =============================================================================
-  datasource:
-    url: jdbc:mysql://localhost:3306/smart_campus_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: ${MYSQL_PASSWORD:}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-    open-in-view: false
+  data:
+    mongodb:
+      uri: mongodb+srv://PAFProject:PAF1234@pafproject.wkxkdsh.mongodb.net/smart_campus?appName=PAFProject
   
   # =============================================================================
   # OAuth2 Configuration (Google)

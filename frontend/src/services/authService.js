@@ -22,6 +22,22 @@ const authService = {
   },
 
   /**
+   * Login user with email and password.
+   */
+  login: async (email, password) => {
+    const response = await axiosInstance.post('/auth/login', { email, password });
+    return response.data;
+  },
+
+  /**
+   * Register a new user with email and password.
+   */
+  register: async (email, password, name) => {
+    const response = await axiosInstance.post('/auth/register', { email, password, name });
+    return response.data;
+  },
+
+  /**
    * Refresh the access token using the refresh token cookie.
    * 
    * @returns {Promise<Object>} New token information
@@ -49,7 +65,7 @@ const authService = {
    * @returns {Promise<Array>} List of all users
    */
   getAllUsers: async () => {
-    const response = await axiosInstance.get('/users');
+    const response = await axiosInstance.get('/admin/users');
     return response.data;
   },
 
@@ -62,7 +78,18 @@ const authService = {
    * @returns {Promise<Object>} Updated user data
    */
   updateUserRole: async (userId, role) => {
-    const response = await axiosInstance.put(`/users/${userId}/role`, { role });
+    const response = await axiosInstance.put(`/admin/users/${userId}/role`, { role });
+    return response.data;
+  },
+
+  /**
+   * Create a new user (Admin only).
+   * 
+   * @param {Object} userData - { name, email, password, role }
+   * @returns {Promise<Object>} Created user data
+   */
+  adminCreateUser: async (userData) => {
+    const response = await axiosInstance.post('/admin/users', userData);
     return response.data;
   },
 

@@ -10,6 +10,16 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(null);
 
+  // New user modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'STUDENT'
+  });
+
   // Fetch all users on mount
   useEffect(() => {
     fetchUsers();
@@ -33,13 +43,31 @@ const AdminUsers = () => {
       setUpdating(userId);
       setError(null);
       const updatedUser = await authService.updateUserRole(userId, newRole);
-      
+
       // Update user in local state
       setUsers(users.map(u => u.id === userId ? updatedUser : u));
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to update role');
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      setIsCreating(true);
+      setError(null);
+      await authService.adminCreateUser(newUserData);
+
+      // Close modal and refresh list
+      setIsModalOpen(false);
+      setNewUserData({ name: '', email: '', password: '', role: 'STUDENT' });
+      await fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to create user');
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -70,14 +98,95 @@ const AdminUsers = () => {
           <h1 className="page-title">User Management</h1>
           <p className="page-subtitle">Manage user roles and permissions</p>
         </div>
-        <button onClick={fetchUsers} className="btn btn-secondary">
-          Refresh
-        </button>
+        <div className="flex gap-1">
+          <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
+            + Create New Account
+          </button>
+          <button onClick={fetchUsers} className="btn btn-secondary">
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
         <div className="alert alert-error">
           {error}
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-title">Create New Account</h2>
+            <form onSubmit={handleCreateUser}>
+              <div className="form-group mb-1">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newUserData.name}
+                  onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
+                  required
+                  placeholder="John Doe"
+                />
+              </div>
+              <div className="form-group mb-1">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={newUserData.email}
+                  onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                  required
+                  placeholder="email@example.com"
+                />
+              </div>
+              <div className="form-group mb-1">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  value={newUserData.password}
+                  onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
+                  required
+                  placeholder="Min 6 characters"
+                  minLength={6}
+                />
+              </div>
+              <div className="form-group mb-2">
+                <label className="form-label">Initial Role</label>
+                <select
+                  className="form-select"
+                  value={newUserData.role}
+                  onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value })}
+                  required
+                >
+                  <option value="STUDENT">STUDENT</option>
+                  <option value="LECTURER">LECTURER</option>
+                  <option value="TECHNICIAN">TECHNICIAN</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="btn btn-secondary"
+                  disabled={isCreating}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isCreating}
+                >
+                  {isCreating ? 'Creating...' : 'Create Account'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -128,9 +237,10 @@ const AdminUsers = () => {
                     className="form-select"
                     style={{ width: 'auto', minWidth: '120px' }}
                   >
-                    <option value="USER">USER</option>
-                    <option value="ADMIN">ADMIN</option>
+                    <option value="STUDENT">STUDENT</option>
+                    <option value="LECTURER">LECTURER</option>
                     <option value="TECHNICIAN">TECHNICIAN</option>
+                    <option value="ADMIN">ADMIN</option>
                   </select>
                   {updating === user.id && (
                     <span style={{ marginLeft: '8px', color: '#666' }}>

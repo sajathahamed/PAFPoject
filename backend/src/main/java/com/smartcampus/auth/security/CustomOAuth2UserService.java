@@ -88,7 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .profilePicture(picture)
                 .provider(provider)
                 .providerId(providerId)
-                .role(Role.USER) // Default role
+                .role(Role.STUDENT) // Default role
                 .lastLoginAt(LocalDateTime.now())
                 .build();
         

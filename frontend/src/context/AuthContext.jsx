@@ -33,8 +33,8 @@ export const AuthProvider = ({ children }) => {
       const userData = await authService.getCurrentUser();
       setUser(userData);
     } catch (err) {
-      // 401 means not authenticated - this is expected for unauthenticated users
-      if (err.response?.status !== 401) {
+      // 401 or 404 means not authenticated - this is expected for unauthenticated users
+      if (err.response?.status !== 401 && err.response?.status !== 404) {
         console.error('Auth check error:', err);
         setError(err.response?.data?.error || 'Authentication check failed');
       }
@@ -54,10 +54,47 @@ export const AuthProvider = ({ children }) => {
   /**
    * Redirect to Google OAuth2 login.
    */
-  const login = useCallback(() => {
+  const loginWithGoogle = useCallback(() => {
     // Redirect to backend OAuth2 endpoint
     window.location.href = authService.getGoogleLoginUrl();
   }, []);
+
+  /**
+   * Login with email and password.
+   */
+  const login = useCallback(async (email, password) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await authService.login(email, password);
+      await checkAuth(); // Load user data after login
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.response?.data?.error || 'Login failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [checkAuth]);
+
+  /**
+   * Register with email, password, and name.
+   */
+  const register = useCallback(async (email, password, name) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await authService.register(email, password, name);
+      // Auto-login after registration or redirect to login
+      await login(email, password);
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError(err.response?.data?.error || 'Registration failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [login]);
 
   /**
    * Logout the current user.
@@ -99,7 +136,7 @@ export const AuthProvider = ({ children }) => {
   const hasRole = useCallback(
     (roles) => {
       if (!user) return false;
-      
+
       const roleArray = Array.isArray(roles) ? roles : [roles];
       return roleArray.includes(user.role);
     },
@@ -116,6 +153,16 @@ export const AuthProvider = ({ children }) => {
    */
   const isTechnician = useCallback(() => hasRole('TECHNICIAN'), [hasRole]);
 
+  /**
+   * Check if the current user is a student.
+   */
+  const isStudent = useCallback(() => hasRole('STUDENT'), [hasRole]);
+
+  /**
+   * Check if the current user is a lecturer.
+   */
+  const isLecturer = useCallback(() => hasRole('LECTURER'), [hasRole]);
+
   // Context value
   const value = {
     user,
@@ -123,12 +170,16 @@ export const AuthProvider = ({ children }) => {
     error,
     isAuthenticated: !!user,
     login,
+    loginWithGoogle,
     logout,
+    register,
     refreshAuth,
     checkAuth,
     hasRole,
     isAdmin,
     isTechnician,
+    isStudent,
+    isLecturer,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
