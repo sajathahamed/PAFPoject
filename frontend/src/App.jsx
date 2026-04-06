@@ -1,79 +1,48 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import OAuthCallback from './pages/OAuthCallback';
-import Dashboard from './pages/Dashboard';
-import AdminUsers from './pages/AdminUsers';
-import Unauthorized from './pages/Unauthorized';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import { AuthProvider } from './context/AuthContext'
+import RoleRoute from './components/RoleRoute'
 
-/**
- * Main App component with routing configuration.
- * 
- * Route structure:
- * - Public routes: /login, /oauth-callback
- * - Protected routes (any authenticated user): /dashboard
- * - Admin-only routes: /admin/users
- * - Fallback: redirect to dashboard
- */
-function App() {
+import LoginPage            from './pages/LoginPage'
+import StudentHome          from './pages/StudentHome'
+import LecturerHome         from './pages/LecturerHome'
+import TechnicianDashboard  from './pages/TechnicianDashboard'
+import AdminHome            from './pages/AdminHome'
+import Unauthorized         from './pages/Unauthorized'
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
+export default function App() {
   return (
-    <div className="app">
-      {/* Navigation - only shows when authenticated */}
-      <Navbar />
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* Main content area */}
-      <main>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/oauth-callback" element={<OAuthCallback />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route
+              path="/student/home"
+              element={<RoleRoute role="STUDENT"><StudentHome /></RoleRoute>}
+            />
+            <Route
+              path="/lecturer/home"
+              element={<RoleRoute role="LECTURER"><LecturerHome /></RoleRoute>}
+            />
+            <Route
+              path="/technician/dashboard"
+              element={<RoleRoute role="TECHNICIAN"><TechnicianDashboard /></RoleRoute>}
+            />
+            <Route
+              path="/admin/home"
+              element={<RoleRoute role="ADMIN"><AdminHome /></RoleRoute>}
+            />
 
-          {/* Protected routes - any authenticated user */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admin-only routes */}
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRoute roles="ADMIN">
-                <AdminUsers />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Technician routes (placeholder) */}
-          <Route
-            path="/work-orders"
-            element={
-              <ProtectedRoute roles={['ADMIN', 'TECHNICIAN']}>
-                <div className="container" style={{ paddingTop: '24px' }}>
-                  <h1>Work Orders</h1>
-                  <p>Work orders management coming soon...</p>
-                </div>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Root redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-          {/* 404 - redirect to dashboard */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </main>
-    </div>
-  );
+            {/* Catch-all → login */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  )
 }
-
-export default App;
