@@ -9,6 +9,9 @@ import LecturerHome         from './pages/LecturerHome'
 import TechnicianDashboard  from './pages/TechnicianDashboard'
 import AdminHome            from './pages/AdminHome'
 import Unauthorized         from './pages/Unauthorized'
+import MyBookingsPage       from './pages/MyBookingsPage'
+import CreateBookingPage    from './pages/CreateBookingPage'
+import BookingDetailPage    from './pages/BookingDetailPage'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
@@ -36,6 +39,19 @@ export default function App() {
             <Route
               path="/admin/home"
               element={<RoleRoute role="ADMIN"><AdminHome /></RoleRoute>}
+            />
+
+            <Route
+              path="/bookings"
+              element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><MyBookingsPage /></RoleRoute>}
+            />
+            <Route
+              path="/bookings/create"
+              element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><CreateBookingPage /></RoleRoute>}
+            />
+            <Route
+              path="/bookings/:id"
+              element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><BookingDetailPage /></RoleRoute>}
             />
 
             {/* Catch-all → login */}
