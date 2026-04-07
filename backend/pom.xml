@@ -18,7 +18,8 @@
     <description>SmartCampus Backend API</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
+        <!-- Spring Boot 3.2.0 uses Spring Framework 6.0, which requires Java 21 or higher -->
     </properties>
 
     <dependencies>
@@ -88,6 +89,20 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

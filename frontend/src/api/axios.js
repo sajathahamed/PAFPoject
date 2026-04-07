@@ -5,11 +5,15 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach JWT on every request
+// Attach JWT and user ID on every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('sc_jwt')
+  const user = JSON.parse(localStorage.getItem('sc_user') || '{}')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  }
+  if (user.id) {
+    config.headers['X-User-Id'] = user.id
   }
   return config
 })
