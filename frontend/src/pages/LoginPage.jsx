@@ -1,46 +1,75 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { motion } from 'framer-motion';
 import useAuth from '../hooks/useAuth';
+import '../styles/ClassicHero.css';
+
+function roleToPath(role) {
+  switch (role) {
+    case 'TECHNICIAN': return '/technician/dashboard';
+    case 'LECTURER':   return '/lecturer/home';
+    case 'ADMIN':    return '/admin/home';
+    default:       return '/student/home';
+  }
+}
 
 /**
- * Login page with both local and Google OAuth2 authentication.
+ * Login page with 3D floating animation and teal (#21ada1) theme.
  */
 const LoginPage = () => {
-  const { isAuthenticated, loading, error, login, loginWithGoogle, register } = useAuth();
+  const { loginWithGoogle, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Form state
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
-    if (isAuthenticated && !loading) {
-      navigate(from, { replace: true });
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (user && !busy) {
+      navigate(roleToPath(user.role), { replace: true });
     }
-  }, [isAuthenticated, loading, navigate, from]);
+  }, [navigate, from, busy]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setBusy(true);
     try {
-      await login(formData.email, formData.password);
-    } catch (err) {
-      // Error is handled by AuthContext
+      const user = await login(form.email, form.password);
+      navigate(roleToPath(user.role), { replace: true });
+    } catch (e) {
+      setError(e.response?.data?.error || 'Something went wrong.');
+    } finally {
+      setBusy(false);
     }
   };
 
-  if (loading) {
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setBusy(true);
+    try {
+      const user = await loginWithGoogle(credentialResponse.credential);
+      navigate(roleToPath(user.role), { replace: true });
+    } catch (e) {
+      setError(e.response?.data?.error || 'Google login failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (busy) {
     return (
-      <div className="login-container">
-        <div className="login-card">
+      <div className="hero-container">
+        <div className="hero-form-container">
           <div className="spinner"></div>
         </div>
       </div>
@@ -48,93 +77,113 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-logo">🏫</div>
-        <h1 className="login-title">Smart Campus</h1>
-        <p className="login-subtitle">Operations Hub</p>
-
-        {error && <div className="alert alert-error mb-2">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="mb-2">
-          <div className="form-group mb-1">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              name="email"
-              className="form-input"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="email@example.com"
-            />
-          </div>
-          <div className="form-group mb-2">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="form-input"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="••••••••"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-            Sign In
-          </button>
-        </form>
-
-        <div className="text-center mb-2">
-          <p style={{ fontSize: '14px' }}>
-            Don't have an account? <Link to="/register" className="btn-link">Register</Link>
-          </p>
-        </div>
-
-        <div className="divider mb-2">
-          <span>OR</span>
-        </div>
-
-        <button onClick={loginWithGoogle} className="btn btn-google" style={{ width: '100%' }}>
-          <GoogleIcon />
-          Sign in with Google
-        </button>
+    <div className="hero-container">
+      <div className="hero-background">
+        <div className="gradient-orb orb-1"></div>
+        <div className="gradient-orb orb-2"></div>
       </div>
+
+      <motion.div
+        className="hero-content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        {/* Left Side - Logo */}
+        <div className="hero-logo-left">
+          <motion.div
+            className="vscode-logo-container"
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <svg className="vscode-logo" viewBox="0 0 256 256" fill="none">
+              <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#21ada1" />
+                  <stop offset="50%" stopColor="#21ada1" />
+                  <stop offset="100%" stopColor="#21ada1" />
+                </linearGradient>
+              </defs>
+              <rect x="20" y="20" width="216" height="216" rx="50" fill="url(#logoGradient)" />
+              <path d="M80 120L100 100L140 140L180 100V140L140 180L100 140L80 160V120Z" fill="white" />
+            </svg>
+            <div className="logo-glow"></div>
+          </motion.div>
+        </div>
+
+        {/* Right Side - Form */}
+        <div className="hero-form-right">
+          <motion.div
+            className="hero-form-container"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            <h1 className="hero-title">Welcome to Smart Campus</h1>
+            <p className="hero-subtitle">Live Your Future</p>
+
+            <div className="hero-divider"></div>
+
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google login failed')}
+              useOneTap
+            />
+
+            <div className="divider">OR</div>
+
+            <form onSubmit={handleSubmit} className="hero-form">
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  className="form-input"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="email@example.com"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  className="form-input"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your password"
+                />
+              </div>
+
+              {error && <div className="alert alert-error">{error}</div>}
+
+              <button type="submit" className="btn-primary">
+                Sign In
+              </button>
+            </form>
+
+            <div className="text-center mb-4">
+              <p style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Don't have an account? <Link to="/register" className="btn-link">Register</Link>
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 };
 
-/**
- * Google G logo SVG icon.
- */
-const GoogleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M17.64 9.20455C17.64 8.56636 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5614V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z"
-      fill="#4285F4"
-    />
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1014 10.2109 14.4205 9 14.4205C6.65591 14.4205 4.67182 12.8373 3.96409 10.71H0.957275V13.0418C2.43818 15.9832 5.48182 18 9 18Z"
-      fill="#34A853"
-    />
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29V4.95818H0.957273C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957273 13.0418L3.96409 10.71Z"
-      fill="#FBBC05"
-    />
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z"
-      fill="#EA4335"
-    />
-  </svg>
-);
+function LoginPageWithGoogle() {
+  return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <LoginPage />
+    </GoogleOAuthProvider>
+  );
+}
 
-export default LoginPage;
+export default LoginPageWithGoogle;
