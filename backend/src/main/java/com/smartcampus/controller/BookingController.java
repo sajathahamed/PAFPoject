@@ -105,4 +105,14 @@ public class BookingController {
         LocalDateTime end = LocalDateTime.parse(endTime);
         return ResponseEntity.ok(bookingService.checkConflicts(resource, start, end));
     }
+
+    @PostMapping("/recurring")
+    public ResponseEntity<?> createRecurringBooking(@RequestBody Booking booking, @RequestHeader("X-User-Id") String userId) {
+        try {
+            List<Booking> created = bookingService.createRecurringBooking(booking, userId);
+            return ResponseEntity.ok(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

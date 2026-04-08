@@ -92,6 +92,23 @@ const MyBookingsPage = () => {
                   Cancel
                 </button>
               )}
+              {booking.status === 'APPROVED' && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await bookingAPI.cancel(booking.id);
+                      setBookings(prev => prev.map(b =>
+                        b.id === booking.id ? { ...b, status: 'CANCELLED' } : b
+                      ));
+                    } catch (error) {
+                      alert('Error cancelling booking');
+                    }
+                  }}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
         ))}
