@@ -1,0 +1,33 @@
+{
+  "worktrees": {
+    "wt-1775584962255-1": {
+      "branch": "angry-alder",
+      "path": "c:\\Users\\ShowmikaUthayakumara\\OneDrive - Magick Woods Exports Pvt Ltd\\Documents\\PAFPoject\\.kilo\\worktrees\\angry-alder",
+      "parentBranch": "Showmika",
+      "createdAt": "2026-04-07T18:02:42.255Z",
+      "remote": "origin",
+      "label": "Profile picture and button layout (fork #1)"
+    },
+    "wt-1775585007567-2": {
+      "branch": "vast-joggers",
+      "path": "c:\\Users\\ShowmikaUthayakumara\\OneDrive - Magick Woods Exports Pvt Ltd\\Documents\\PAFPoject\\.kilo\\worktrees\\vast-joggers",
+      "parentBranch": "main",
+      "createdAt": "2026-04-07T18:03:27.567Z",
+      "remote": "origin"
+    }
+  },
+  "sessions": {
+    "ses_296e394afffeKJly2txir1C9fz": {
+      "worktreeId": "wt-1775584962255-1",
+      "createdAt": "2026-04-07T18:02:43.460Z"
+    },
+    "ses_2981b07c4ffe5fGm3YBHjZ9t3G": {
+      "worktreeId": "wt-1775585007567-2",
+      "createdAt": "2026-04-07T18:03:27.569Z"
+    }
+  },
+  "worktreeOrder": [
+    "wt-1775585007567-2",
+    "wt-1775584962255-1"
+  ]
+}

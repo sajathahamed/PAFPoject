@@ -1,0 +1,23 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.smartcampus:smart-campus-auth >------------------
+[INFO] Building Smart Campus Operations Hub - Auth Module 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ smart-campus-auth ---
+[INFO] Deleting C:\PAFPoject\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ smart-campus-auth ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ smart-campus-auth ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 41 source files with javac [debug parameters release 17] to target\classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.168 s
+[INFO] Finished at: 2026-04-05T23:11:15+05:30
+[INFO] ------------------------------------------------------------------------
