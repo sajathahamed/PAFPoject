@@ -1,46 +1,133 @@
-import { useState, useEffect } from 'react'
-import useAuth from '../hooks/useAuth'
-import DashboardSidebar from '../components/DashboardSidebar'
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { fetchTickets, updateTicketStatus } from '../api/technician'
+import TicketCard from '../components/TicketCard'
+import ResolveModal from '../components/ResolveModal'
 
-const TechnicianDashboard = () => {
-  const { user } = useAuth()
-  const [tickets, setTickets] = useState([])
-  const [loading, setLoading] = useState(true)
+const FILTERS = ['ALL', 'IN_PROGRESS', 'RESOLVED']
 
-  return (
-    <div className="dashboard-layout">
-      <DashboardSidebar />
-      <div className="dashboard-content">
-        <div className="page-header">
-          <h1 className="page-title">Welcome, {user?.name || 'Technician'}!</h1>
-          <p className="page-subtitle">Technician Dashboard - Smart Campus</p>
-        </div>
+function Avatar({ user }) {
+  const [imgFailed, setImgFailed] = useState(false)
+  const initial = user?.name ? user.name.charAt(0).toUpperCase() : '?'
 
-        <div className="dashboard-grid">
-          <div className="card">
-            <h3>Your Profile</h3>
-            <div className="mt-2">
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p><strong>Role:</strong> <span className="badge badge-technician">{user?.role}</span></p>
-            </div>
-          </div>
-
-          <div className="card">
-            <h3>Pending Tickets</h3>
-            <p className="mt-1">No pending tickets at the moment.</p>
-          </div>
-
-          <div className="card">
-            <h3>Quick Actions</h3>
-            <div className="mt-2">
-              <button className="btn btn-primary">View All Tickets</button>
-              <button className="btn btn-secondary" style={{ marginLeft: '10px' }}>Reports</button>
-            </div>
-          </div>
-        </div>
+  if (user?.picture && !imgFailed) {
+    return (
+      <div className="avatar">
+        <img
+          src={user.picture}
+          alt={user.name}
+          onError={() => setImgFailed(true)}
+        />
       </div>
-    </div>
-  )
+    )
+  }
+
+  return <div className="avatar">{initial}</div>
 }
 
-export default TechnicianDashboard
+export default function TechnicianDashboard() {
+  const { user, logout } = useAuth()
+
+  const [tickets, setTickets] = useState([])
+  const [activeFilter, setActiveFilter] = useState('ALL')
+  const [loading, setLoading] = useState(true)
+  const [resolveTarget, setResolveTarget] = useState(null) // ticket being resolved
+  const [resolveBusy, setResolveBusy] = useState(false)
+
+  const loadTickets = useCallback(async (status) => {
+    setLoading(true)
+    try {
+      const data = await fetchTickets(status)
+      setTickets(data)
+    } catch (e) {
+      console.error('Failed to load tickets', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadTickets(activeFilter)
+  }, [activeFilter, loadTickets])
+
+  async function handleConfirmResolve(ticketId, note) {
+    setResolveBusy(true)
+    try {
+      const updated = await updateTicketStatus(ticketId, 'RESOLVED', note)
+      setTickets((prev) =>
+        prev.map((t) => (t.id === updated.id ? updated : t))
+      )
+      setResolveTarget(null)
+    } catch (e) {
+      console.error('Failed to update ticket', e)
+    } finally {
+      setResolveBusy(false)
+    }
+  }
+
+  // If filter is ALL, show all tickets; otherwise tickets are already filtered from API
+  const displayed = tickets
+
+  return (
+    <>
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-brand">Smart<span>Campus</span></div>
+        <div className="navbar-user">
+          <Avatar user={user} />
+          <span className="navbar-username">{user?.name}</span>
+          <button className="btn-logout" onClick={logout}>Log out</button>
+        </div>
+      </nav>
+
+      {/* Dashboard content */}
+      <div className="dashboard-body">
+        <div className="page-heading">
+          <h1>My Assigned Tickets</h1>
+          <span className="count-badge">{tickets.length}</span>
+        </div>
+        <p className="page-subtext">Showing tickets assigned to you</p>
+
+        {/* Filter tabs */}
+        <div className="filter-tabs">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              className={`filter-tab${activeFilter === f ? ' active' : ''}`}
+              onClick={() => setActiveFilter(f)}
+            >
+              {f === 'IN_PROGRESS' ? 'In Progress' : f.charAt(0) + f.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+
+        {/* Ticket list */}
+        {loading ? (
+          <div className="loading-wrap">Loading tickets…</div>
+        ) : displayed.length === 0 ? (
+          <div className="empty-state">No tickets found.</div>
+        ) : (
+          <div className="ticket-list">
+            {displayed.map((ticket) => (
+              <TicketCard
+                key={ticket.id}
+                ticket={ticket}
+                onResolveClick={setResolveTarget}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Resolve modal */}
+      {resolveTarget && (
+        <ResolveModal
+          ticket={resolveTarget}
+          onConfirm={handleConfirmResolve}
+          onClose={() => setResolveTarget(null)}
+          loading={resolveBusy}
+        />
+      )}
+    </>
+  )
+}
