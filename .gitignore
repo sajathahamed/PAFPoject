@@ -1,75 +1,29 @@
-# Compiled class files
-*.class
-
-# Log files
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-
-# Gradle
-.gradle/
-build/
-
-# IDE
+# ── IDE & OS ──────────────────────────────────────────────────────────
 .idea/
 *.iml
-*.ipr
-*.iws
 .vscode/
-*.swp
-*.swo
-.project
-.classpath
-.settings/
-
-# OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# ── Backend secrets (NEVER commit these) ──────────────────────────────
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-*.properties
+!backend/src/main/resources/application.properties
 
-# Build outputs
-dist/
-build/
+# ── Backend build output ────────────────────────────────────────────
+backend/target/
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# ── Frontend secrets ──────────────────────────────────────────────────
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
 
-# Test coverage
-coverage/
-*.lcov
+# ── Frontend build / deps ──────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
 
-# Misc
-*.bak
-*.tmp
+# ── Logs ────────────────────────────────────────────────────────────
+*.log
+logs/

@@ -1,216 +1,147 @@
-# Smart Campus Operations Hub - Module E
+# SmartCampus — Authentication + Technician Module
 
-## Authentication & Authorization Module
-
-A comprehensive authentication system for the Smart Campus Operations Hub university web platform, featuring OAuth2 Google Sign-In, JWT tokens, and role-based access control.
-
-### Tech Stack
-
-**Backend:**
-- Java 17
-- Spring Boot 3.2.3
-- Spring Security 6.x with OAuth2
-- JWT (JJWT 0.12.5)
-- MySQL Database
-- Maven
-
-**Frontend:**
-- React 18
-- React Router v6
-- Axios
-- Vite
+Stack: React 18 (Vite) · Spring Boot 3.2 · MongoDB · Google OAuth2 · JWT
 
 ---
 
-## Features
+## Project structure
 
-### Authentication
-- Google OAuth2 Sign-In
-- JWT access tokens (15 min expiry)
-- Refresh tokens (7 days expiry, stored in DB)
-- HttpOnly cookie storage (XSS protection)
-- Automatic token refresh on 401
-
-### Authorization
-- Role-based access control (USER, ADMIN, TECHNICIAN)
-- Protected routes with role requirements
-- Method-level security (@PreAuthorize)
-- Admin-only user management
-
-### API Endpoints
-
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/auth/me` | Get current user profile | Authenticated |
-| POST | `/api/auth/refresh` | Refresh access token | Public |
-| DELETE | `/api/auth/logout` | Logout and revoke tokens | Public |
-| GET | `/api/users` | List all users | ADMIN |
-| PUT | `/api/users/{id}/role` | Update user role | ADMIN |
+```
+PAFPoject/
+├── backend/          ← Spring Boot API
+└── frontend/         ← React + Vite SPA
+```
 
 ---
 
-## Quick Start
+## 1. Prerequisites
 
-### Prerequisites
-- JDK 17+
-- Node.js 18+
-- MySQL 8.0+
-- Google OAuth2 credentials
+| Tool | Version |
+|------|---------|
+| Java | 17+ |
+| Maven | 3.9+ |
+| Node.js | 18+ |
+| MongoDB | 6+ (running locally on port 27017) |
 
-### Backend Setup
+---
 
-1. **Create MySQL database:**
-```sql
-CREATE DATABASE smart_campus_db;
+## 2. Google Cloud setup (required)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services → Credentials**
+2. Create an **OAuth 2.0 Client ID** (Web application)
+3. Add `http://localhost:5173` to **Authorised JavaScript origins**
+4. Copy the **Client ID**
+
+---
+
+## 3. Configure environment variables
+
+### Backend — `backend/src/main/resources/application.properties`
+
+```properties
+google.client.id=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+jwt.secret=some-long-random-secret-at-least-32-chars
+technician.test.email=the-email-you-will-log-in-with@gmail.com
 ```
 
-2. **Configure environment variables:**
-```bash
-export GOOGLE_CLIENT_ID=your-google-client-id
-export GOOGLE_CLIENT_SECRET=your-google-client-secret
-export JWT_SECRET=your-256-bit-secret-key
-export MYSQL_PASSWORD=your-mysql-password
+> `technician.test.email` — any **new** user whose email matches this string is automatically
+> assigned the `TECHNICIAN` role. Use your own Google account email here to test the dashboard.
+
+### Frontend — `frontend/.env`
+
+```
+VITE_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com
+VITE_API_URL=http://localhost:8080
 ```
 
-3. **Run the backend:**
+---
+
+## 4. Run the backend
+
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-The backend will start on `http://localhost:8080`
+The API starts on **http://localhost:8080**.
 
-### Frontend Setup
+On first start, `DataSeeder` will automatically populate MongoDB with 4 users and 6 tickets.
 
-1. **Install dependencies:**
+---
+
+## 5. Run the frontend
+
 ```bash
 cd frontend
 npm install
-```
-
-2. **Start development server:**
-```bash
 npm run dev
 ```
 
-The frontend will start on `http://localhost:5173`
+The app opens at **http://localhost:5173**.
 
 ---
 
-## Project Structure
+## 6. Testing the application
 
-```
-PAFProject/
-├── backend/
-│   ├── src/main/java/com/smartcampus/auth/
-│   │   ├── controller/        # REST endpoints
-│   │   ├── dto/               # Data transfer objects
-│   │   ├── entity/            # JPA entities
-│   │   ├── exception/         # Exception handlers
-│   │   ├── repository/        # Data repositories
-│   │   ├── security/          # Security components
-│   │   └── service/           # Business logic
-│   └── src/test/java/         # Unit & integration tests
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/               # Axios instance
-│   │   ├── components/        # Reusable components
-│   │   ├── context/           # React context providers
-│   │   ├── hooks/             # Custom hooks
-│   │   ├── pages/             # Page components
-│   │   └── services/          # API service functions
-│   └── vite.config.js
-│
-└── .github/workflows/         # CI/CD configuration
-```
+### Getting the TECHNICIAN role
+
+Set `technician.test.email` in `application.properties` to the Gmail address you will sign in
+with. On first login via Google (or via the sign-up form), that account is assigned
+`TECHNICIAN` and redirected to `/technician/dashboard`.
+
+> **Note:** The role is assigned only when the user does not already exist in the database.
+> If you change `technician.test.email` after a run, **drop the `users` collection** in MongoDB
+> first (`db.users.drop()`), or just delete only that specific user document.
+
+### Login options
+
+| Method | How |
+|--------|-----|
+| Google OAuth | Click **Sign in with Google** — uses the Google popup |
+| Email + password | Use the **Sign In / Create Account** form below the Google button |
 
 ---
 
-## Authentication Flow
+## 7. Seeded data
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Frontend   │────▶│   Backend    │────▶│    Google    │
-│  Login Page  │     │  OAuth2 URL  │     │   OAuth2     │
-└──────────────┘     └──────────────┘     └──────────────┘
-                                                 │
-                     ┌──────────────┐             │
-                     │   Backend    │◀────────────┘
-                     │ OAuth2 Handler│  (authorization code)
-                     └──────────────┘
-                            │
-                            ▼
-                     ┌──────────────┐
-                     │ Create/Update│
-                     │    User      │
-                     └──────────────┘
-                            │
-                            ▼
-                     ┌──────────────┐
-                     │ Generate JWT │
-                     │ Set Cookies  │
-                     └──────────────┘
-                            │
-                            ▼
-                     ┌──────────────┐
-                     │  Redirect to │
-                     │   Frontend   │
-                     └──────────────┘
-```
+The seeder creates **4 users** (one per role) and **6 tickets assigned to the TECHNICIAN**:
+
+### Seeded tickets
+
+| # | Title | Status |
+|---|-------|--------|
+| 1 | WiFi Connectivity Issue in Block A | IN_PROGRESS |
+| 2 | Projector Not Working in Room B204 | IN_PROGRESS |
+| 3 | Lab Computer #14 Fails to Boot | IN_PROGRESS |
+| 4 | Printer Jam in Faculty Office | RESOLVED |
+| 5 | Software License Expired — MATLAB | RESOLVED |
+| 6 | Air Conditioning Unit Malfunction — Server Room | RESOLVED |
+
+The seeded **technician user** (Kasun Rajapaksa, `kasun.rajapaksa@sliit.lk`) is a MongoDB-only
+seed account. To log in as a technician yourself, use your own Google account or email/password
+and set `technician.test.email` accordingly.
 
 ---
 
-## Testing
+## 8. API endpoints summary
 
-### Run Backend Tests
-```bash
-cd backend
-mvn test                    # Unit tests only
-mvn verify                  # Unit + integration tests
-```
-
-### Run Frontend Lint
-```bash
-cd frontend
-npm run lint
-```
+| Method | Path | Auth |
+|--------|------|------|
+| POST | `/auth/google/callback` | Public |
+| POST | `/auth/login` | Public |
+| POST | `/auth/signup` | Public |
+| GET  | `/api/users/me` | JWT required |
+| GET  | `/api/technician/tickets?status=ALL` | JWT + TECHNICIAN role |
+| PUT  | `/api/technician/tickets/:id/status` | JWT + TECHNICIAN role |
+| GET  | `/actuator/health` | Public |
 
 ---
 
-## Environment Variables
+## 9. Role redirect map
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GOOGLE_CLIENT_ID` | Google OAuth2 client ID | Required |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth2 client secret | Required |
-| `JWT_SECRET` | Secret key for JWT signing (256+ bits) | Required |
-| `MYSQL_PASSWORD` | MySQL database password | Empty |
-
----
-
-## Security Considerations
-
-1. **JWT Storage**: Tokens stored in HttpOnly cookies (not localStorage)
-2. **Token Rotation**: Refresh tokens are rotated on use
-3. **CORS**: Configured for specific origins only
-4. **CSRF**: Disabled (stateless JWT auth)
-5. **Role Validation**: Server-side check on every request
-
----
-
-## Design Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| HttpOnly Cookies | XSS protection; tokens inaccessible to JavaScript |
-| Token Rotation | Limits damage from token theft |
-| UUID Refresh Tokens | Enables server-side revocation |
-| Backend OAuth2 | Spring Security handles complexity; frontend just redirects |
-| Vite over CRA | Faster builds, modern ESM tooling |
-
----
-
-## License
-
-This project is developed for SLIIT IT3030 PAF Assignment.
+| Role | Redirect after login |
+|------|---------------------|
+| STUDENT | `/student/home` |
+| LECTURER | `/lecturer/home` |
+| TECHNICIAN | `/technician/dashboard` |
+| ADMIN | `/admin/home` |
