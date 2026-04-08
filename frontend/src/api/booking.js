@@ -12,5 +12,6 @@ export const bookingAPI = {
   cancel: (id) => axios.post(`/api/bookings/${id}/cancel`),
   delete: (id) => axios.delete(`/api/bookings/${id}`),
   checkConflicts: (resource, startTime, endTime) =>
-    axios.get('/api/bookings/conflicts', { params: { resource, startTime, endTime } })
+    axios.get('/api/bookings/conflicts', { params: { resource, startTime, endTime } }),
+  createRecurring: (booking) => axios.post('/api/bookings/recurring', booking)
 };

@@ -139,4 +139,68 @@ public class BookingService {
     public List<Booking> checkConflicts(String resource, LocalDateTime startTime, LocalDateTime endTime) {
         return bookingRepository.findOverlappingBookings(resource, startTime, endTime);
     }
+
+    public List<Booking> createRecurringBooking(Booking booking, String createdBy) {
+        if (!booking.isRecurring() || booking.getRecurrencePattern() == null || booking.getRecurrencePattern().isEmpty()) {
+            throw new RuntimeException("Invalid recurrence configuration");
+        }
+
+        List<Booking> createdBookings = new java.util.ArrayList<>();
+        LocalDateTime currentStart = booking.getStartTime();
+        LocalDateTime currentEnd = booking.getEndTime();
+        LocalDateTime endDate = currentStart.plusMonths(3);
+
+        int maxIterations = 100;
+        int iteration = 0;
+
+        while (currentStart.isBefore(endDate) && iteration < maxIterations) {
+            Booking recurringBooking = Booking.builder()
+                    .title(booking.getTitle())
+                    .description(booking.getDescription())
+                    .resource(booking.getResource())
+                    .startTime(currentStart)
+                    .endTime(currentEnd)
+                    .recurring(false)
+                    .recurrencePattern(null)
+                    .createdBy(createdBy)
+                    .status("PENDING")
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
+            Optional<User> admin = userRepository.findAll().stream()
+                    .filter(u -> "ADMIN".equals(u.getRole()))
+                    .findFirst();
+            admin.ifPresent(u -> recurringBooking.setAssignedTo(u.getId()));
+
+            List<Booking> conflicts = bookingRepository.findOverlappingBookings(
+                    recurringBooking.getResource(), recurringBooking.getStartTime(), recurringBooking.getEndTime());
+            
+            if (conflicts.isEmpty()) {
+                recurringBooking.setStatus("APPROVED");
+                createdBookings.add(bookingRepository.save(recurringBooking));
+            } else {
+                recurringBooking.setStatus("PENDING");
+                createdBookings.add(bookingRepository.save(recurringBooking));
+            }
+
+            switch (booking.getRecurrencePattern()) {
+                case "DAILY" -> {
+                    currentStart = currentStart.plusDays(1);
+                    currentEnd = currentEnd.plusDays(1);
+                }
+                case "WEEKLY" -> {
+                    currentStart = currentStart.plusWeeks(1);
+                    currentEnd = currentEnd.plusWeeks(1);
+                }
+                default -> {
+                    currentStart = currentStart.plusWeeks(1);
+                    currentEnd = currentEnd.plusWeeks(1);
+                }
+            }
+            iteration++;
+        }
+
+        return createdBookings;
+    }
 }
