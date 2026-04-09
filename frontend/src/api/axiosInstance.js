@@ -55,8 +55,15 @@ axiosInstance.interceptors.response.use(
       if (originalRequest.url === '/auth/refresh') {
         // Refresh failed, redirect to login IF not already there
         if (window.location.pathname !== '/login' && window.location.pathname !== '/oauth-callback') {
+          console.error('Auth refresh failed, redirecting to login');
           window.location.href = '/login';
         }
+        return Promise.reject(error);
+      }
+
+      // Don't retry admin/user endpoints - they require higher privileges
+      if (originalRequest.url.includes('/admin/users')) {
+        console.error('Admin endpoint failed with 401:', originalRequest.url);
         return Promise.reject(error);
       }
 

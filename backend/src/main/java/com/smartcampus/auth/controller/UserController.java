@@ -1,6 +1,8 @@
 package com.smartcampus.auth.controller;
 
 import com.smartcampus.auth.dto.AdminUserCreateRequest;
+import com.smartcampus.auth.dto.AdminUserUpdateRequest;
+import com.smartcampus.auth.dto.MessageResponse;
 import com.smartcampus.auth.dto.RoleUpdateRequest;
 import com.smartcampus.auth.dto.UserDTO;
 import com.smartcampus.auth.entity.User;
@@ -101,5 +103,39 @@ public class UserController {
         log.info("Admin is creating a new user: {}", request.getEmail());
         User user = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(UserDTO.fromEntity(user));
+    }
+
+    /**
+     * Update a user (name, email, role).
+     * Admin only.
+     * 
+     * @param id the user ID to update
+     * @param request the user update request
+     * @return Updated UserDTO
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> updateUser(
+            @PathVariable String id,
+            @Valid @RequestBody AdminUserUpdateRequest request) {
+        
+        log.info("Updating user: {}", id);
+        User updatedUser = userService.updateUser(id, request);
+        return ResponseEntity.ok(UserDTO.fromEntity(updatedUser));
+    }
+
+    /**
+     * Delete a user.
+     * Admin only.
+     * 
+     * @param id the user ID to delete
+     * @return Success message
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        log.info("Deleting user: {}", id);
+        userService.deleteUser(id);
+        return ResponseEntity.ok(MessageResponse.of("User deleted successfully"));
     }
 }

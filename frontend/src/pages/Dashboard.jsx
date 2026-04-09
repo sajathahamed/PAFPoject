@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
 import { User, Mail, Shield, LogIn, Camera, Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react'
 import { updateProfile, uploadProfilePicture, changePassword } from '../api/profile'
 
 const Dashboard = () => {
-  const { user, isAdmin, setUser } = useAuth()
+  const { user, isAdmin, checkAuth } = useAuth()
   const fileInputRef = useRef(null)
   
   const [viewMode, setViewMode] = useState('view')
@@ -32,8 +33,8 @@ const Dashboard = () => {
     setAlert({ type: '', message: '' })
     
     try {
-      const updated = await updateProfile(editForm.name, editForm.email)
-      setUser({ ...user, name: updated.name, email: updated.email })
+      await updateProfile(editForm.name, editForm.email)
+      await checkAuth()
       setViewMode('view')
       setAlert({ type: 'success', message: 'Profile updated successfully!' })
     } catch (err) {
@@ -78,9 +79,8 @@ const Dashboard = () => {
     reader.onload = async () => {
       setUploadingImage(true)
       try {
-        const base64 = reader.result
-        const updated = await uploadProfilePicture(base64)
-        setUser({ ...user, picture: updated.profilePicture || updated.picture })
+        await uploadProfilePicture(reader.result)
+        await checkAuth()
         setAlert({ type: 'success', message: 'Profile picture updated!' })
       } catch (err) {
         const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to upload image'
@@ -138,8 +138,8 @@ const Dashboard = () => {
               <div className="profile-view-modern">
                 <div className="profile-avatar-section">
                   <div className="profile-avatar-large">
-                    {user?.picture ? (
-                      <img src={user.picture} alt="Profile" />
+                    {user?.profilePicture ? (
+                      <img src={user.profilePicture} alt="Profile" />
                     ) : (
                       <div className="avatar-placeholder-lg">{user?.name?.[0] || '?'}</div>
                     )}
@@ -309,9 +309,9 @@ const Dashboard = () => {
               <div className="action-content-modern">
                 <h3>Admin Controls</h3>
                 <p>Manage system users and settings</p>
-                <a href="/admin/users" className="btn btn-primary mt-2">
+                <Link to="/admin/users" className="btn btn-primary mt-2">
                   Manage Users
-                </a>
+                </Link>
               </div>
             </div>
           )}

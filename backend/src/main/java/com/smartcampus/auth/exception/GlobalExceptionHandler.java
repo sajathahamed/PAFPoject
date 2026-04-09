@@ -186,10 +186,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex, HttpServletRequest request) {
         
-        log.error("Unexpected error: ", ex);
+        log.error("Unexpected error at {}: {} ", request.getRequestURI(), ex.getMessage(), ex);
+        
+        String message = ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred";
         
         ErrorResponse error = ErrorResponse.of(
-                "An unexpected error occurred. Please try again later.",
+                message,
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 request.getRequestURI()
         );

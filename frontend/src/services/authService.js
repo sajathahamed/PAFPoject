@@ -94,6 +94,29 @@ const authService = {
   },
 
   /**
+   * Update a user (Admin only).
+   * 
+   * @param {number} userId - The user ID to update
+   * @param {Object} userData - { name, email, role }
+   * @returns {Promise<Object>} Updated user data
+   */
+  updateUser: async (userId, userData) => {
+    const response = await axiosInstance.put(`/admin/users/${userId}`, userData);
+    return response.data;
+  },
+
+  /**
+   * Delete a user (Admin only).
+   * 
+   * @param {number} userId - The user ID to delete
+   * @returns {Promise<Object>} Deletion confirmation
+   */
+  deleteUser: async (userId) => {
+    const response = await axiosInstance.delete(`/admin/users/${userId}`);
+    return response.data;
+  },
+
+  /**
    * Get the Google OAuth2 login URL.
    * Redirects to this URL to initiate Google login.
    * 

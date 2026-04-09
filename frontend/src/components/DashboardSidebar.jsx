@@ -77,8 +77,8 @@ export default function DashboardSidebar() {
       {isOpen && (
         <div className="sidebar-user">
           <div className="user-avatar">
-            {user?.picture ? (
-              <img src={user.picture} alt="Profile" />
+            {user?.profilePicture ? (
+              <img src={user.profilePicture} alt="Profile" />
             ) : (
               <div className="avatar-placeholder">{user?.name?.[0] || '?'}</div>
             )}

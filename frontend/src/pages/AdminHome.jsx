@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
 import { Users, Settings, BarChart3, Clock, CheckCircle, AlertCircle } from 'lucide-react'
@@ -36,9 +37,9 @@ const AdminHome = () => {
           <div className="card">
             <h3><Users size={18} /> User Management</h3>
             <p className="mt-1">Manage system users and their roles</p>
-            <a href="/admin/users" className="btn btn-primary mt-2">
+            <Link to="/admin/users" className="btn btn-primary mt-2">
               Manage Users
-            </a>
+            </Link>
           </div>
 
           <div className="card">

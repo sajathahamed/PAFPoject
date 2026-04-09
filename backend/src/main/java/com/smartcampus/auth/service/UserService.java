@@ -1,6 +1,7 @@
 package com.smartcampus.auth.service;
 
 import com.smartcampus.auth.dto.AdminUserCreateRequest;
+import com.smartcampus.auth.dto.AdminUserUpdateRequest;
 import com.smartcampus.auth.entity.Role;
 import com.smartcampus.auth.entity.User;
 import com.smartcampus.auth.exception.ResourceNotFoundException;
@@ -122,5 +123,41 @@ public class UserService {
 
         log.info("Admin created new user: {} with role {}", user.getEmail(), user.getRole());
         return userRepository.save(user);
+    }
+
+    /**
+     * Update a user (Admin only).
+     * 
+     * @param userId the user ID to update
+     * @param request the update details
+     * @return the updated user
+     */
+    @Transactional
+    public User updateUser(String userId, AdminUserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
+
+        log.info("Admin updated user: {}", user.getEmail());
+        return userRepository.save(user);
+    }
+
+    /**
+     * Delete a user (Admin only).
+     * 
+     * @param userId the user ID to delete
+     */
+    @Transactional
+    public void deleteUser(String userId) {
+        log.info("Attempting to delete user: {}", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        
+        log.info("Found user to delete: {}", user.getEmail());
+        userRepository.delete(user);
+        log.info("User deleted successfully: {}", user.getEmail());
     }
 }
