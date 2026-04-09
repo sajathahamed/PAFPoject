@@ -15,10 +15,10 @@ import Unauthorized from './pages/Unauthorized';
 
 function roleToPath(role) {
   switch (role) {
-    case 'TECHNICIAN': return '/technician/dashboard';
-    case 'LECTURER':   return '/lecturer/home';
-    case 'ADMIN':    return '/admin/home';
-    default:       return '/student/home';
+    case 'TECHNICIAN': return '/dashboard';
+    case 'LECTURER':   return '/dashboard';
+    case 'ADMIN':    return '/dashboard';
+    default:       return '/dashboard';
   }
 }
 
@@ -104,6 +104,26 @@ function App() {
             element={
               <ProtectedRoute roles="ADMIN">
                 <AdminUsers />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Student Tickets */}
+          <Route
+            path="/student/tickets"
+            element={
+              <ProtectedRoute roles="STUDENT">
+                <StudentHome />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Technician Tickets */}
+          <Route
+            path="/technician/tickets"
+            element={
+              <ProtectedRoute roles="TECHNICIAN">
+                <TechnicianDashboard />
               </ProtectedRoute>
             }
           />

@@ -11,8 +11,8 @@ spring:
   # =============================================================================
   data:
     mongodb:
-      uri: mongodb+srv://PAFProject:Easy%406727@pafproject.wkxkdsh.mongodb.net/smartcampus?retryWrites=true&w=majority
-  # =============================================================================
+      uri: mongodb+srv://PAFProject:QBAukqu7HOnrcwiI@pafproject.wkxkdsh.mongodb.net/smartcampus
+ # =============================================================================
   # OAuth2 Configuration (Google)
   # =============================================================================
   security:

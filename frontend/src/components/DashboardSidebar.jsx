@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import { 
+  LayoutDashboard, 
+  Ticket, 
+  Users, 
+  User, 
+  LogOut, 
+  Menu,
+  X,
+  GraduationCap,
+  Wrench,
+  Settings
+} from 'lucide-react'
 import '../styles/DashboardSidebar.css'
 
 export default function DashboardSidebar() {
@@ -9,26 +21,33 @@ export default function DashboardSidebar() {
   const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
 
+  const getIcon = (label) => {
+    switch (label) {
+      case 'Dashboard': return <LayoutDashboard size={20} />
+      case 'My Tickets': return <Ticket size={20} />
+      case 'Tickets': return <Ticket size={20} />
+      case 'My Classes': return <GraduationCap size={20} />
+      case 'User Management': return <Users size={20} />
+      default: return <User size={20} />
+    }
+  }
+
   const roleMenus = {
     STUDENT: [
-      { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-      { label: 'My Tickets', path: '/student/tickets', icon: '🎫' },
-      { label: 'Profile', path: '/profile', icon: '👤' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
     ],
     LECTURER: [
-      { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-      { label: 'My Classes', path: '/lecturer/classes', icon: '📚' },
-      { label: 'Profile', path: '/profile', icon: '👤' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
     ],
     TECHNICIAN: [
-      { label: 'Dashboard', path: '/dashboard', icon: '🔧' },
-      { label: 'Tickets', path: '/technician/tickets', icon: '🎫' },
-      { label: 'Profile', path: '/profile', icon: '👤' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
     ],
     ADMIN: [
-      { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-      { label: 'User Management', path: '/admin/users', icon: '👤' },
-      { label: 'Profile', path: '/profile', icon: '⚙️' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'User Management', path: '/admin/users', icon: 'User Management' },
     ],
   }
 
@@ -43,22 +62,14 @@ export default function DashboardSidebar() {
   return (
     <div className={`dashboard-sidebar ${isOpen ? 'open' : 'closed'}`}>
       <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? '✕' : '☰'}
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {isOpen && (
         <div className="sidebar-brand">
-          <svg className="sidebar-logo" viewBox="0 0 256 256" fill="none">
-            <defs>
-              <linearGradient id="sidebarLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#21ada1" />
-                <stop offset="50%" stopColor="#21ada1" />
-                <stop offset="100%" stopColor="#21ada1" />
-              </linearGradient>
-            </defs>
-            <rect x="20" y="20" width="216" height="216" rx="50" fill="url(#sidebarLogoGradient)" />
-            <path d="M80 120L100 100L140 140L180 100V140L140 180L100 140L80 160V120Z" fill="white" />
-          </svg>
+          <div className="brand-logo">
+            <Settings size={28} />
+          </div>
           <span className="brand-name">Smart Campus</span>
         </div>
       )}
@@ -87,7 +98,7 @@ export default function DashboardSidebar() {
             onClick={() => navigate(item.path)}
             title={item.label}
           >
-            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-icon">{getIcon(item.icon)}</span>
             {isOpen && <span className="nav-label">{item.label}</span>}
           </button>
         ))}
@@ -96,7 +107,7 @@ export default function DashboardSidebar() {
       <div className="sidebar-spacer"></div>
 
       <button className="sidebar-logout" onClick={handleLogout} title="Logout">
-        <span className="logout-icon">🚪</span>
+        <span className="logout-icon"><LogOut size={20} /></span>
         {isOpen && <span className="logout-label">Log out</span>}
       </button>
     </div>

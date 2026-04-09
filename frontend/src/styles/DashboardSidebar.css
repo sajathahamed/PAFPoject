@@ -87,6 +87,18 @@
   filter: drop-shadow(0 4px 12px rgba(33, 173, 161, 0.2));
 }
 
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--sidebar-accent), #0f8b7f);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(33, 173, 161, 0.25);
+}
+
 .brand-name {
   font-size: 18px;
   font-weight: 700;
