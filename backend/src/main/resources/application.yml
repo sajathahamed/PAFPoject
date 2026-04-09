@@ -11,7 +11,7 @@ spring:
   # =============================================================================
   data:
     mongodb:
-      uri: mongodb+srv://PAFProject:PAF1234@pafproject.wkxkdsh.mongodb.net/smart_campus?appName=PAFProject
+      uri: mongodb+srv://PAFProject:PAF1234@pafproject.wkxkdsh.mongodb.net/smartcampus?appName=PAFProject
   
   # =============================================================================
   # OAuth2 Configuration (Google)
