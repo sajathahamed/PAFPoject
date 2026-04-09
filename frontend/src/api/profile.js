@@ -1,17 +1,17 @@
 import api from './axiosInstance'
 
 export async function updateProfile(name, email) {
-  const res = await api.put('/api/users/profile', { name, email })
+  const res = await api.put('/auth/profile', { name, email })
   return res.data
 }
 
-export async function uploadProfilePicture(base64Image) {
-  const res = await api.put('/api/users/profile-picture', { picture: base64Image })
+export async function uploadProfilePicture(picture) {
+  const res = await api.put('/auth/profile-picture', { picture })
   return res.data
 }
 
 export async function changePassword(oldPassword, newPassword) {
-  const res = await api.post('/api/users/change-password', {
+  const res = await api.post('/auth/change-password', {
     oldPassword,
     newPassword
   })

@@ -2,6 +2,7 @@ package com.smartcampus.auth.controller;
 
 import com.smartcampus.auth.dto.LoginRequest;
 import com.smartcampus.auth.dto.MessageResponse;
+import com.smartcampus.auth.dto.ProfileUpdateRequest;
 import com.smartcampus.auth.dto.RegisterRequest;
 import com.smartcampus.auth.dto.TokenResponse;
 import com.smartcampus.auth.dto.UserDTO;
@@ -69,6 +70,66 @@ public class AuthController {
         }
         log.debug("Fetching current user: {}", user.getEmail());
         return ResponseEntity.ok(UserDTO.fromEntity(user));
+    }
+
+    /**
+     * Update the current user's profile (name and email).
+     * 
+     * @param request the profile update request
+     * @return Updated UserDTO
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody ProfileUpdateRequest request) {
+        try {
+            log.info("Updating profile - name: {}, email: {}", request.getName(), request.getEmail());
+            User updatedUser = authService.updateProfile(request.getName(), request.getEmail());
+            log.info("Profile updated successfully for user: {}", updatedUser.getEmail());
+            return ResponseEntity.ok(UserDTO.fromEntity(updatedUser));
+        } catch (Exception e) {
+            log.error("Error updating profile: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Failed to update profile: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Update the current user's profile picture.
+     * 
+     * @param request the profile picture URL
+     * @return Updated UserDTO
+     */
+    @PutMapping("/profile-picture")
+    public ResponseEntity<?> updateProfilePicture(@RequestBody ProfileUpdateRequest request) {
+        try {
+            log.info("Updating profile picture");
+            User updatedUser = authService.updateProfilePicture(request.getPicture());
+            log.info("Profile picture updated successfully");
+            return ResponseEntity.ok(UserDTO.fromEntity(updatedUser));
+        } catch (Exception e) {
+            log.error("Error updating profile picture: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Failed to update profile picture: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Change the current user's password.
+     * 
+     * @param request the password change request
+     * @return Success message
+     */
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ProfileUpdateRequest request) {
+        try {
+            log.info("Changing password for user");
+            authService.changePassword(request.getOldPassword(), request.getNewPassword());
+            log.info("Password changed successfully");
+            return ResponseEntity.ok(MessageResponse.of("Password changed successfully"));
+        } catch (Exception e) {
+            log.error("Error changing password: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Failed to change password: " + e.getMessage()));
+        }
     }
 
     /**
