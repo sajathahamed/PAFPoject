@@ -70,7 +70,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             
             // Protected endpoints
-            .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout").authenticated()
+            .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout", 
+                "/api/auth/profile", "/api/auth/profile-picture", "/api/auth/change-password").authenticated()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/student/**").hasRole("STUDENT")
             .requestMatchers("/api/lecturer/**").hasRole("LECTURER")

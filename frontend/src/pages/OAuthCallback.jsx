@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
+function roleToPath(role) {
+  switch (role) {
+    case 'TECHNICIAN': return '/technician/dashboard';
+    case 'LECTURER':   return '/lecturer/home';
+    case 'ADMIN':    return '/admin/home';
+    default:       return '/student/home';
+  }
+}
+
 /**
  * OAuth2 callback handler page.
  * 
@@ -9,14 +18,13 @@ import useAuth from '../hooks/useAuth';
  * It checks authentication status and redirects to dashboard.
  */
 const OAuthCallback = () => {
-  const { checkAuth, isAuthenticated, loading } = useAuth();
+  const { checkAuth, isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Re-check authentication status after OAuth redirect
         await checkAuth();
       } catch (err) {
         console.error('OAuth callback error:', err);
@@ -27,15 +35,13 @@ const OAuthCallback = () => {
     handleCallback();
   }, [checkAuth]);
 
-  // Redirect to dashboard once authenticated
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+    if (!loading && isAuthenticated && user) {
+      navigate(roleToPath(user.role), { replace: true });
     } else if (!loading && !isAuthenticated && error) {
-      // If auth check completed and user is not authenticated, redirect to login
       navigate('/login', { replace: true });
     }
-  }, [loading, isAuthenticated, error, navigate]);
+  }, [loading, isAuthenticated, user, error, navigate]);
 
   // Show error if authentication failed
   if (error) {

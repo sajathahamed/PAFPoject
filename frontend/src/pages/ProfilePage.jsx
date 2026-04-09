@@ -1,19 +1,21 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { updateProfile, changePassword } from '../api/profile'
+import { updateProfile, changePassword, uploadProfilePicture } from '../api/profile'
 import '../styles/ProfilePage.css'
 
 const ProfilePage = () => {
   const { user, setUser } = useAuth()
   const navigate = useNavigate()
+  const fileInputRef = useRef(null)
   
   const [viewMode, setViewMode] = useState('view')
   const [form, setForm] = useState({ name: '', email: '' })
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' })
   const [alert, setAlert] = useState({ type: '', message: '' })
   const [loading, setLoading] = useState(false)
+  const [pictureLoading, setPictureLoading] = useState(false)
 
   const isAdmin = user?.role === 'ADMIN'
 
@@ -68,6 +70,58 @@ const ProfilePage = () => {
     }
   }
 
+  const handlePictureClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handlePictureChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setAlert({ type: 'error', message: 'Please select a valid image file' })
+      return
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setAlert({ type: 'error', message: 'Image must be smaller than 2MB' })
+      return
+    }
+
+    setPictureLoading(true)
+    setAlert({ type: '', message: '' })
+
+    try {
+      // Convert to base64
+      const reader = new FileReader()
+      reader.onloadend = async () => {
+        try {
+          const base64 = reader.result
+          const updated = await uploadProfilePicture(base64)
+          setUser({ ...user, profilePicture: updated.profilePicture })
+          setAlert({ type: 'success', message: 'Profile picture updated successfully!' })
+        } catch (err) {
+          setAlert({ type: 'error', message: err.response?.data?.error || 'Failed to upload profile picture' })
+        } finally {
+          setPictureLoading(false)
+        }
+      }
+      reader.onerror = () => {
+        setAlert({ type: 'error', message: 'Failed to read image file' })
+        setPictureLoading(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (err) {
+      setAlert({ type: 'error', message: 'Failed to upload profile picture' })
+      setPictureLoading(false)
+    }
+
+    // Reset file input so same file can be re-selected
+    e.target.value = ''
+  }
+
   return (
     <div className="dashboard-layout">
       <DashboardSidebar />
@@ -86,13 +140,28 @@ const ProfilePage = () => {
 
           <div className="profile-card">
             <div className="profile-picture-section">
-              <div className="profile-picture">
-                {user?.picture ? (
-                  <img src={user.picture} alt="Profile" />
+              <div
+                className={`profile-picture ${pictureLoading ? 'picture-loading' : ''}`}
+                onClick={handlePictureClick}
+                title="Click to change profile picture"
+                style={{ cursor: 'pointer', position: 'relative' }}
+              >
+                {user?.profilePicture ? (
+                  <img src={user.profilePicture} alt="Profile" />
                 ) : (
                   <div className="picture-placeholder">{user?.name?.[0] || '?'}</div>
                 )}
+                <div className="picture-overlay">
+                  {pictureLoading ? 'Uploading...' : 'Change Photo'}
+                </div>
               </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handlePictureChange}
+              />
             </div>
 
             {viewMode === 'view' ? (

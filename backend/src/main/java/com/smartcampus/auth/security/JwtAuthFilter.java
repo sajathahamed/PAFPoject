@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
+@Slf4j
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -29,8 +31,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String token = extractToken(request);
+        log.debug("JWT Filter - Request: {}, Token present: {}", request.getRequestURI(), token != null);
 
         if (token == null) {
+            log.debug("No token found, continuing filter chain");
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,6 +44,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String userId = jwtTokenProvider.extractUserId(token);
                 String email = jwtTokenProvider.extractEmail(token);
                 String role = jwtTokenProvider.extractRole(token).name();
+
+                log.debug("JWT valid - userId: {}, email: {}, role: {}", userId, email, role);
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     // Simple authentication with role
@@ -51,10 +57,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             );
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.debug("Authentication set in SecurityContextHolder");
                 }
+            } else {
+                log.warn("JWT token is invalid");
             }
         } catch (Exception e) {
-            System.err.println("JWT validation failed: " + e.getMessage());
+            log.error("JWT validation failed: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

@@ -14,9 +14,6 @@ function roleToPath(role) {
   }
 }
 
-/**
- * Login page with 3D floating animation and teal (#21ada1) theme.
- */
 const LoginPage = () => {
   const { loginWithGoogle, login } = useAuth();
   const navigate = useNavigate();

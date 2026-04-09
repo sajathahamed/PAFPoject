@@ -67,7 +67,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       await authService.login(email, password);
-      await checkAuth(); // Load user data after login
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
+      return userData;
     } catch (err) {
       console.error('Login error:', err);
       setError(err.response?.data?.error || 'Login failed');
@@ -75,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [checkAuth]);
+  }, []);
 
   /**
    * Register with email, password, and name.
@@ -166,6 +168,7 @@ export const AuthProvider = ({ children }) => {
   // Context value
   const value = {
     user,
+    setUser,
     loading,
     error,
     isAuthenticated: !!user,
@@ -184,5 +187,3 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export default AuthContext;

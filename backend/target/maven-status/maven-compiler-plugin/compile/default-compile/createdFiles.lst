@@ -27,7 +27,9 @@ com\smartcampus\auth\repository\BookingRepository.class
 com\smartcampus\auth\entity\User$UserBuilder.class
 com\smartcampus\auth\entity\Notification$NotificationBuilder.class
 com\smartcampus\auth\exception\InvalidTokenException.class
+com\smartcampus\auth\dto\AdminUserUpdateRequest.class
 com\smartcampus\auth\entity\TicketPriority.class
+com\smartcampus\auth\dto\ProfileUpdateRequest.class
 com\smartcampus\auth\entity\Role.class
 com\smartcampus\auth\dto\UserDTO.class
 com\smartcampus\auth\entity\ResourceStatus.class
@@ -46,6 +48,7 @@ com\smartcampus\auth\repository\NotificationRepository.class
 com\smartcampus\auth\exception\BadRequestException.class
 com\smartcampus\auth\config\DatabaseSeeder.class
 com\smartcampus\auth\entity\Booking$BookingBuilder.class
+com\smartcampus\auth\dto\ProfileUpdateRequest$ProfileUpdateRequestBuilder.class
 com\smartcampus\auth\repository\CommentRepository.class
 com\smartcampus\auth\dto\AdminUserCreateRequest.class
 com\smartcampus\auth\service\AuthService.class

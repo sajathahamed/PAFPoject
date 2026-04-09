@@ -100,20 +100,34 @@ public class AuthService {
      */
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.debug("Authentication: {}", authentication);
+        log.debug("Is authenticated: {}", authentication != null ? authentication.isAuthenticated() : "N/A");
+        log.debug("Principal: {}", authentication != null ? authentication.getPrincipal() : "N/A");
         
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            log.warn("User not authenticated - returning null");
             return null;
         }
 
         Object principal = authentication.getPrincipal();
+        log.debug("Principal type: {}", principal != null ? principal.getClass().getName() : "N/A");
         
         if (principal instanceof User) {
+            log.debug("Principal is already a User entity");
             return (User) principal;
         }
         
         // If it's a string (email from the token), find it in DB
         if (principal instanceof String) {
-            return userRepository.findByEmail((String) principal).orElse(null);
+            String email = (String) principal;
+            log.debug("Looking up user by email: {}", email);
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user == null) {
+                log.warn("User not found in database for email: {}", email);
+            } else {
+                log.debug("User found: {}", user.getEmail());
+            }
+            return user;
         }
         
         return null;
@@ -178,6 +192,76 @@ public class AuthService {
         // Clear cookies
         clearCookie(response, "accessToken");
         clearCookie(response, "refreshToken");
+    }
+
+    /**
+     * Update the current user's profile (name and email).
+     */
+    @Transactional
+    public User updateProfile(String name, String email) {
+        User user = getCurrentUser();
+        log.debug("Current user for profile update: {}", user);
+        if (user == null) {
+            log.error("User is null - not authenticated");
+            throw new RuntimeException("User not authenticated");
+        }
+        if (name != null && !name.isBlank()) {
+            user.setName(name);
+        }
+        if (email != null && !email.isBlank()) {
+            user.setEmail(email);
+        }
+        log.info("Profile updated for user: {}", user.getEmail());
+        return userRepository.save(user);
+    }
+
+    /**
+     * Update the current user's profile picture.
+     */
+    @Transactional
+    public User updateProfilePicture(String picture) {
+        User user = getCurrentUser();
+        log.debug("Current user for picture update: {}", user);
+        if (user == null) {
+            log.error("User is null - not authenticated");
+            throw new RuntimeException("User not authenticated");
+        }
+        user.setProfilePicture(picture);
+        log.info("Profile picture updated for user: {}", user.getEmail());
+        return userRepository.save(user);
+    }
+
+    /**
+     * Change the current user's password.
+     */
+    @Transactional
+    public void changePassword(String oldPassword, String newPassword) {
+        User user = getCurrentUser();
+        log.debug("Current user for password change: {}", user);
+        if (user == null) {
+            log.error("User is null - not authenticated");
+            throw new RuntimeException("User not authenticated");
+        }
+        
+        if (user.getPassword() == null) {
+            throw new RuntimeException("Cannot change password for OAuth users");
+        }
+        
+        if (oldPassword == null || oldPassword.isBlank()) {
+            throw new RuntimeException("Current password is required");
+        }
+        
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+        
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new RuntimeException("New password must be at least 8 characters");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        log.info("Password changed for user: {}", user.getEmail());
     }
 
     /**

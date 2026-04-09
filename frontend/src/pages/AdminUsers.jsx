@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import authService from '../services/authService';
+import DashboardSidebar from '../components/DashboardSidebar';
+import { Trash2, Edit2 } from 'lucide-react';
 
 /**
  * Admin page for managing users and their roles.
@@ -71,6 +73,57 @@ const AdminUsers = () => {
     }
   };
 
+  // Edit user modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUserData, setEditUserData] = useState({ name: '', email: '', role: 'STUDENT' });
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditClick = (user) => {
+    setEditingUser(user);
+    setEditUserData({ name: user.name, email: user.email, role: user.role });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSave = async (e) => {
+    e.preventDefault();
+    try {
+      setIsEditing(true);
+      setError(null);
+      console.log('Updating user:', editingUser.id, editUserData);
+      await authService.updateUser(editingUser.id, editUserData);
+      console.log('Update successful');
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+      await fetchUsers();
+    } catch (err) {
+      console.error('Edit error:', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to update user';
+      setError(errorMsg);
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      setUpdating(userId);
+      setError(null);
+      console.log('Deleting user:', userId);
+      await authService.deleteUser(userId);
+      console.log('Delete successful');
+      await fetchUsers();
+      await fetchUsers();
+    } catch (err) {
+      console.error('Delete error:', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to delete user';
+      setError(errorMsg);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return 'Never';
@@ -92,8 +145,10 @@ const AdminUsers = () => {
   }
 
   return (
-    <div className="container" style={{ paddingTop: '24px' }}>
-      <div className="page-header flex-between">
+    <div className="dashboard-layout">
+      <DashboardSidebar />
+      <div className="dashboard-content">
+        <div className="page-header flex-between">
         <div>
           <h1 className="page-title">User Management</h1>
           <p className="page-subtitle">Manage user roles and permissions</p>
@@ -190,6 +245,68 @@ const AdminUsers = () => {
         </div>
       )}
 
+      {/* Edit User Modal */}
+      {isEditModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-title">Edit User</h2>
+            <form onSubmit={handleEditSave}>
+              <div className="form-group mb-1">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editUserData.name}
+                  onChange={(e) => setEditUserData({ ...editUserData, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group mb-1">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={editUserData.email}
+                  onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group mb-2">
+                <label className="form-label">Role</label>
+                <select
+                  className="form-select"
+                  value={editUserData.role}
+                  onChange={(e) => setEditUserData({ ...editUserData, role: e.target.value })}
+                  required
+                >
+                  <option value="STUDENT">STUDENT</option>
+                  <option value="LECTURER">LECTURER</option>
+                  <option value="TECHNICIAN">TECHNICIAN</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="btn btn-secondary"
+                  disabled={isEditing}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isEditing}
+                >
+                  {isEditing ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="card">
         <table className="table">
           <thead>
@@ -230,23 +347,23 @@ const AdminUsers = () => {
                 <td>{user.provider}</td>
                 <td>{formatDate(user.lastLoginAt)}</td>
                 <td>
-                  <select
-                    value={user.role}
-                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    disabled={updating === user.id}
-                    className="form-select"
-                    style={{ width: 'auto', minWidth: '120px' }}
-                  >
-                    <option value="STUDENT">STUDENT</option>
-                    <option value="LECTURER">LECTURER</option>
-                    <option value="TECHNICIAN">TECHNICIAN</option>
-                    <option value="ADMIN">ADMIN</option>
-                  </select>
-                  {updating === user.id && (
-                    <span style={{ marginLeft: '8px', color: '#666' }}>
-                      Saving...
-                    </span>
-                  )}
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleEditClick(user)}
+                      className="btn btn-sm btn-outline"
+                      title="Edit user"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="btn btn-sm btn-danger"
+                      title="Delete user"
+                      disabled={updating === user.id}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -258,6 +375,7 @@ const AdminUsers = () => {
             No users found.
           </p>
         )}
+      </div>
       </div>
     </div>
   );

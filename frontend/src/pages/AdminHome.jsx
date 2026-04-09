@@ -1,43 +1,61 @@
-import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
+import { Users, Settings, BarChart3, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 
 const AdminHome = () => {
   const { user } = useAuth()
+
+  const stats = [
+    { label: 'Total Users', value: '156', icon: <Users size={20} /> },
+    { label: 'Active Tickets', value: '23', icon: <AlertCircle size={20} /> },
+    { label: 'Resolved', value: '89', icon: <CheckCircle size={20} /> },
+  ]
 
   return (
     <div className="dashboard-layout">
       <DashboardSidebar />
       <div className="dashboard-content">
         <div className="page-header">
-          <h1 className="page-title">Welcome, {user?.name || 'Admin'}!</h1>
+          <h1 className="page-title">Welcome, {user?.name?.split(' ')[0] || 'Admin'}!</h1>
           <p className="page-subtitle">Admin Dashboard - Smart Campus</p>
         </div>
 
         <div className="dashboard-grid">
-          <div className="card">
-            <h3>Your Profile</h3>
-            <div className="mt-2">
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p><strong>Role:</strong> <span className="badge badge-admin">{user?.role}</span></p>
+          {stats.map((stat, index) => (
+            <div key={index} className="stat-mini-card">
+              <div className="stat-mini-icon">{stat.icon}</div>
+              <div className="stat-mini-content">
+                <span className="stat-mini-value">{stat.value}</span>
+                <span className="stat-mini-label">{stat.label}</span>
+              </div>
             </div>
+          ))}
+        </div>
+
+        <div className="dashboard-grid" style={{ marginTop: '24px' }}>
+          <div className="card">
+            <h3><Users size={18} /> User Management</h3>
+            <p className="mt-1">Manage system users and their roles</p>
+            <Link to="/admin/users" className="btn btn-primary mt-2">
+              Manage Users
+            </Link>
           </div>
 
           <div className="card">
-            <h3>Admin Actions</h3>
-            <p className="mt-1">Manage system users and settings.</p>
-            <div className="mt-2">
-              <a href="/admin/users" className="btn btn-primary">Manage Users</a>
-            </div>
+            <h3><Settings size={18} /> System Settings</h3>
+            <p className="mt-1">Configure system parameters</p>
+            <button className="btn btn-secondary mt-2">
+              Settings
+            </button>
           </div>
 
           <div className="card">
-            <h3>System Overview</h3>
-            <ul style={{ paddingLeft: '20px', marginTop: '8px' }}>
-              <li>Total Users</li>
-              <li>Active Tickets</li>
-              <li>System Status</li>
-            </ul>
+            <h3><BarChart3 size={18} /> Reports</h3>
+            <p className="mt-1">View system analytics</p>
+            <button className="btn btn-secondary mt-2">
+              View Reports
+            </button>
           </div>
         </div>
       </div>
