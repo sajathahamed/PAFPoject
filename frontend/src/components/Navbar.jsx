@@ -1,17 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
-/**
- * Navigation bar with role-based menu items.
- * 
- * Shows different navigation options based on user role:
- * - All users: Dashboard, Profile
- * - Admin: User Management
- * - Technician: Work Orders
- */
 const Navbar = () => {
   const { user, isAuthenticated, logout, isAdmin, isTechnician, isStudent, isLecturer } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -19,27 +12,30 @@ const Navbar = () => {
   };
 
   if (!isAuthenticated) {
-    return null; // Don't show navbar if not authenticated
+    return null;
+  }
+
+  const hideOnPaths = ['/dashboard', '/student/home', '/admin/home', '/technician/dashboard', '/lecturer/home', '/profile', '/admin/users'];
+  const shouldHide = hideOnPaths.some(path => location.pathname.startsWith(path));
+
+  if (shouldHide) {
+    return null;
   }
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Brand */}
         <Link to="/dashboard" className="navbar-brand">
           🏫 Smart Campus
         </Link>
 
-        {/* Navigation Items */}
         <ul className="navbar-nav">
-          {/* Common links */}
           <li>
             <Link to="/dashboard" className="nav-link">
               Dashboard
             </Link>
           </li>
 
-          {/* Admin only */}
           {isAdmin() && (
             <li>
               <Link to="/admin/users" className="nav-link">
@@ -48,7 +44,6 @@ const Navbar = () => {
             </li>
           )}
 
-          {/* Student/Lecturer - Booking options */}
           {(isStudent() || isLecturer()) && (
             <li>
               <Link to="/bookings" className="nav-link">
@@ -57,7 +52,6 @@ const Navbar = () => {
             </li>
           )}
 
-          {/* Technician only */}
           {isTechnician() && (
             <li>
               <Link to="/work-orders" className="nav-link">
@@ -66,7 +60,6 @@ const Navbar = () => {
             </li>
           )}
 
-          {/* User profile and logout */}
           <li className="nav-user">
             {user?.profilePicture && (
               <img
