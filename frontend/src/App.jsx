@@ -13,6 +13,10 @@ import MyBookingsPage       from './pages/MyBookingsPage'
 import CreateBookingPage    from './pages/CreateBookingPage'
 import BookingDetailPage    from './pages/BookingDetailPage'
 
+import ResourcesPage        from './pages/ResourcesPage'
+import ResourceDetailPage   from './pages/ResourceDetailPage'
+import AdminResourcesPage   from './pages/AdminResourcesPage'
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
 export default function App() {
@@ -52,6 +56,19 @@ export default function App() {
             <Route
               path="/bookings/:id"
               element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><BookingDetailPage /></RoleRoute>}
+            />
+
+            <Route
+              path="/resources"
+              element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><ResourcesPage /></RoleRoute>}
+            />
+            <Route
+              path="/resources/:id"
+              element={<RoleRoute role={['STUDENT', 'LECTURER', 'TECHNICIAN', 'ADMIN']}><ResourceDetailPage /></RoleRoute>}
+            />
+            <Route
+              path="/admin/resources"
+              element={<RoleRoute role="ADMIN"><AdminResourcesPage /></RoleRoute>}
             />
 
             {/* Catch-all → login */}
