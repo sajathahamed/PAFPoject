@@ -131,6 +131,12 @@ and set `technician.test.email` accordingly.
 | POST | `/auth/login` | Public |
 | POST | `/auth/signup` | Public |
 | GET  | `/api/users/me` | JWT required |
+| GET  | `/api/resources?type=&capacity=&location=&status=&q=` | JWT required |
+| GET  | `/api/resources/:id` | JWT required |
+| POST | `/api/resources` | JWT + ADMIN role |
+| PUT  | `/api/resources/:id` | JWT + ADMIN role |
+| PATCH | `/api/resources/:id/status` | JWT + ADMIN role |
+| DELETE | `/api/resources/:id` | JWT + ADMIN role |
 | GET  | `/api/technician/tickets?status=ALL` | JWT + TECHNICIAN role |
 | PUT  | `/api/technician/tickets/:id/status` | JWT + TECHNICIAN role |
 | GET  | `/actuator/health` | Public |
@@ -144,4 +150,93 @@ and set `technician.test.email` accordingly.
 | STUDENT | `/student/home` |
 | LECTURER | `/lecturer/home` |
 | TECHNICIAN | `/technician/dashboard` |
-| ADMIN | `/admin/home` |
+| ADMIN | `/admin/resources` |
+
+---
+
+## 10. Resource Catalogue (Module A)
+
+### Frontend routes
+
+| Route | Who | Description |
+|------|-----|-------------|
+| `/resources` | Any logged-in user | Browse/search/filter resources |
+| `/resources/:id` | Any logged-in user | View resource details |
+| `/admin/resources` | ADMIN | Manage resources (CRUD + status toggle) |
+
+### Filtering query parameters
+
+- `type`: `ROOM` \| `LAB` \| `HALL`
+- `capacity`: integer (min capacity, must be > 0)
+- `location`: string (case-insensitive contains match)
+- `status`: `ACTIVE` \| `OUT_OF_SERVICE`
+- `q`: string (case-insensitive contains match on `name`)
+
+Example:
+
+`GET /api/resources?type=LAB&capacity=25&location=Malabe&status=ACTIVE&q=computer`
+
+### Sample API responses
+
+#### GET `/api/resources`
+
+```json
+[
+  {
+    "id": "6613f4c4b4c9a34b2f8c2f11",
+    "name": "Main Auditorium",
+    "type": "HALL",
+    "capacity": 250,
+    "location": "Malabe - Block A",
+    "status": "ACTIVE",
+    "createdAt": "2026-04-08T10:12:30.120",
+    "updatedAt": "2026-04-08T10:12:30.120"
+  }
+]
+```
+
+#### POST `/api/resources` (ADMIN)
+
+Request:
+
+```json
+{
+  "name": "Lab 3",
+  "type": "LAB",
+  "capacity": 40,
+  "location": "Malabe - Faculty of Computing"
+}
+```
+
+Response (201):
+
+```json
+{
+  "id": "6613f4c4b4c9a34b2f8c2f12",
+  "name": "Lab 3",
+  "type": "LAB",
+  "capacity": 40,
+  "location": "Malabe - Faculty of Computing",
+  "status": "ACTIVE",
+  "createdAt": "2026-04-08T10:12:30.120",
+  "updatedAt": "2026-04-08T10:12:30.120"
+}
+```
+
+#### PATCH `/api/resources/:id/status` (ADMIN)
+
+Request:
+
+```json
+{ "status": "OUT_OF_SERVICE" }
+```
+
+Validation error example (400):
+
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "Request validation failed",
+  "fields": { "capacity": "must be greater than or equal to 1" }
+}
+```

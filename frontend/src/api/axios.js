@@ -18,10 +18,18 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const status = err.response?.status
+    const url = err.config?.url || ''
+    const isAuthEndpoint = url.includes('/auth/')
+
+    // Don't hard-redirect for auth endpoints (e.g. invalid credentials on /auth/login).
+    // Let the calling page handle and display the error message.
+    if (status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('sc_jwt')
       localStorage.removeItem('sc_user')
-      window.location.replace('/login')
+      if (window.location.pathname !== '/login') {
+        window.location.replace('/login')
+      }
     }
     return Promise.reject(err)
   }

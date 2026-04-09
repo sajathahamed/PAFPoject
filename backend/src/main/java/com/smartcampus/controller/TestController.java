@@ -90,7 +90,7 @@ public class TestController {
         ? technicianTestEmail
         : email.trim();
 
-    User technician = userRepository.findByEmail(targetEmail)
+    User technician = userRepository.findByEmailIgnoreCase(targetEmail)
         .orElse(null);
 
     if (technician == null) {

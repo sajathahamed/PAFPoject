@@ -7,7 +7,7 @@ function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN': return '/technician/dashboard'
     case 'LECTURER':   return '/lecturer/home'
-    case 'ADMIN':      return '/admin/home'
+    case 'ADMIN':      return '/admin/resources'
     default:           return '/student/home'
   }
 }
@@ -45,10 +45,10 @@ export default function LoginPage() {
     try {
       let user
       if (tab === 'login') {
-        user = await loginWithPassword(form.email, form.password)
+        user = await loginWithPassword(form.email.trim(), form.password)
       } else {
         if (!form.name.trim()) { setError('Name is required.'); setBusy(false); return }
-        user = await signup(form.name.trim(), form.email, form.password)
+        user = await signup(form.name.trim(), form.email.trim(), form.password)
       }
       navigate(roleToPath(user.role), { replace: true })
     } catch (e) {

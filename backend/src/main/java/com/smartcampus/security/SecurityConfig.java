@@ -44,6 +44,11 @@ public class SecurityConfig {
                 .requestMatchers("/test/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resources/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/resources/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/resources/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/resources/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/resources/**").hasRole("ADMIN")
                 .requestMatchers("/api/technician/**").hasRole("TECHNICIAN")
                 .anyRequest().authenticated()
             )
@@ -60,7 +65,7 @@ public class SecurityConfig {
             .filter(s -> !s.isBlank())
             .collect(Collectors.toList());
         config.setAllowedOrigins(origins);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

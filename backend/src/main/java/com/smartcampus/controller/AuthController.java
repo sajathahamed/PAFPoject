@@ -81,16 +81,17 @@ public class AuthController {
     // ── Username / Password signup ─────────────────────────────────────────
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest req) {
-        if (userRepository.existsByEmail(req.email())) {
+        String email = normalizeEmail(req.email());
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error", "Email already registered"));
         }
 
-        String role = resolveRoleForEmail(req.email(), null);
+        String role = resolveRoleForEmail(email, null);
 
         User user = User.builder()
                 .name(req.name())
-                .email(req.email())
+                .email(email)
                 .password(passwordEncoder.encode(req.password()))
                 .role(role)
                 .createdAt(LocalDateTime.now())
@@ -108,7 +109,8 @@ public class AuthController {
     // ── Username / Password login ──────────────────────────────────────────
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
-        Optional<User> optUser = userRepository.findByEmail(req.email());
+        String email = normalizeEmail(req.email());
+        Optional<User> optUser = userRepository.findByEmailIgnoreCase(email);
         if (optUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid credentials"));
@@ -131,13 +133,15 @@ public class AuthController {
     // ── Helpers ────────────────────────────────────────────────────────────
 
     private User upsertGoogleUser(String googleId, String email, String name, String picture) {
+        email = normalizeEmail(email);
         // Look up by email first (handles merging if they signed up with password before)
-        Optional<User> existing = userRepository.findByEmail(email);
+        Optional<User> existing = userRepository.findByEmailIgnoreCase(email);
 
         if (existing.isPresent()) {
             User user = existing.get();
             // Update Google-specific fields and keep existing role
             user.setGoogleId(googleId);
+            user.setEmail(email);
             if (name != null) user.setName(name);
             if (picture != null) user.setPicture(picture);
             return userRepository.save(user);
@@ -179,6 +183,10 @@ public class AuthController {
                 "picture", user.getPicture() != null ? user.getPicture() : "",
                 "role",    user.getRole()
         );
+    }
+
+    private String normalizeEmail(String email) {
+        return email == null ? "" : email.trim().toLowerCase();
     }
 
     // ── Request records ────────────────────────────────────────────────────

@@ -43,7 +43,7 @@ public class EnsureTestAccounts implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        Optional<User> existing = userRepository.findByEmail(techEmail);
+        Optional<User> existing = userRepository.findByEmailIgnoreCase(techEmail);
 
         User technicianUser;
 
