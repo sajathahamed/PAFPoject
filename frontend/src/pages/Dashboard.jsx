@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { User, Mail, Shield, LogIn, Camera, Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react'
+import notificationService from '../services/notificationService'
+import { User, Mail, Shield, LogIn, Camera, Lock, Eye, EyeOff, CheckCircle, XCircle, Bell } from 'lucide-react'
 import { updateProfile, uploadProfilePicture, changePassword } from '../api/profile'
 
 const Dashboard = () => {
@@ -16,6 +17,22 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadCount()
+    }
+  }, [user])
+
+  const fetchUnreadCount = async () => {
+    try {
+      const count = await notificationService.getUnreadCount()
+      setUnreadCount(count)
+    } catch (err) {
+      console.error('Failed to fetch unread count:', err)
+    }
+  }
 
   const handleEdit = () => {
     setEditForm({ name: user?.name || '', email: user?.email || '' })
@@ -106,8 +123,14 @@ const Dashboard = () => {
       <DashboardSidebar />
       <div className="dashboard-content">
         <div className="page-header">
-          <h1 className="page-title">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h1>
-          <p className="page-subtitle">Smart Campus Operations Hub</p>
+          <div className="page-header-left">
+            <h1 className="page-title">Welcome back, {user?.name?.split(' ')[0] || 'User'}!</h1>
+            <p className="page-subtitle">Smart Campus Operations Hub</p>
+          </div>
+          <Link to="/notifications" className="notification-link">
+            <Bell size={24} />
+            {unreadCount > 0 && <span className="notification-count">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+          </Link>
         </div>
 
         {alert.message && (

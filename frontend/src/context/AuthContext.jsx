@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import authService from '../services/authService';
 
 /**
@@ -19,19 +19,22 @@ export const AuthContext = createContext(null);
  */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  /** Full-screen loader only for the first session check — not during login/register */
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const initialAuthCheckDone = useRef(false);
 
   /**
    * Check authentication status by fetching current user.
    * Called on mount and after OAuth callback.
    */
   const checkAuth = useCallback(async () => {
+    const showGlobalLoader = !initialAuthCheckDone.current;
     try {
-      setLoading(true);
+      if (showGlobalLoader) setLoading(true);
       setError(null);
       const userData = await authService.getCurrentUser();
-      setUser(userData);
+      setUser(userData ?? null);
     } catch (err) {
       // 401 or 404 means not authenticated - this is expected for unauthenticated users
       if (err.response?.status !== 401 && err.response?.status !== 404) {
@@ -40,7 +43,10 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(null);
     } finally {
-      setLoading(false);
+      if (showGlobalLoader) {
+        initialAuthCheckDone.current = true;
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -64,18 +70,22 @@ export const AuthProvider = ({ children }) => {
    */
   const login = useCallback(async (email, password) => {
     try {
-      setLoading(true);
       setError(null);
       await authService.login(email, password);
+      await new Promise((resolve) => setTimeout(resolve, 150));
       const userData = await authService.getCurrentUser();
+      if (!userData) {
+        throw new Error('Signed in but profile could not be loaded. Try again.');
+      }
       setUser(userData);
       return userData;
     } catch (err) {
-      console.error('Login error:', err);
-      setError(err.response?.data?.error || 'Login failed');
+      const msg =
+        err.response?.data?.error ||
+        err.message ||
+        'Login failed';
+      setError(msg);
       throw err;
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -84,17 +94,12 @@ export const AuthProvider = ({ children }) => {
    */
   const register = useCallback(async (email, password, name) => {
     try {
-      setLoading(true);
       setError(null);
       await authService.register(email, password, name);
-      // Auto-login after registration or redirect to login
       await login(email, password);
     } catch (err) {
-      console.error('Registration error:', err);
       setError(err.response?.data?.error || 'Registration failed');
       throw err;
-    } finally {
-      setLoading(false);
     }
   }, [login]);
 

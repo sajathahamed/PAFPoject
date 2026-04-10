@@ -25,11 +25,18 @@ public class Notification {
     @Field("type")
     private NotificationType type;
 
+    @Field("title")
+    private String title;
+
     @Field("message")
     private String message;
 
     @Field("related_id")
     private String relatedId;
+
+    @Field("related_entity_type")
+    @Builder.Default
+    private RelatedEntityType relatedEntityType = RelatedEntityType.NONE;
 
     @Field("is_read")
     @Builder.Default
