@@ -9,9 +9,9 @@ import {
   LogOut, 
   Menu,
   X,
-  GraduationCap,
-  Wrench,
-  Settings
+  Settings,
+  Calendar,
+  ClipboardList
 } from 'lucide-react'
 import '../styles/DashboardSidebar.css'
 
@@ -26,8 +26,9 @@ export default function DashboardSidebar() {
       case 'Dashboard': return <LayoutDashboard size={20} />
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
-      case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
+      case 'My Bookings': return <Calendar size={20} />
+      case 'All Bookings': return <ClipboardList size={20} />
       default: return <User size={20} />
     }
   }
@@ -36,10 +37,11 @@ export default function DashboardSidebar() {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
-      { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
     ],
     TECHNICIAN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
@@ -47,12 +49,19 @@ export default function DashboardSidebar() {
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
     ],
   }
 
   const menuItems = roleMenus[user?.role] || []
-  const isActive = (path) => location.pathname === path
+
+  const isItemActive = (item) => {
+    if (item.path === '/bookings/my') {
+      return location.pathname === '/bookings/my' || /^\/bookings\/[^/]+$/.test(location.pathname)
+    }
+    return location.pathname === item.path
+  }
 
   const handleLogout = () => {
     logout()
@@ -93,8 +102,8 @@ export default function DashboardSidebar() {
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <button
-            key={item.path}
-            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+            key={`${item.path}-${item.label}`}
+            className={`nav-item ${isItemActive(item) ? 'active' : ''}`}
             onClick={() => navigate(item.path)}
             title={item.label}
           >

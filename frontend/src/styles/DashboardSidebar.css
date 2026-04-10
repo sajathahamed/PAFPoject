@@ -32,6 +32,12 @@
   width: 80px;
 }
 
+/* When collapsed, brand/user sections are hidden so the nav starts at the very top.
+   Add extra top padding to avoid overlapping the toggle button. */
+.dashboard-sidebar.closed .sidebar-nav {
+  padding-top: 76px;
+}
+
 /* Toggle Button */
 .sidebar-toggle {
   position: absolute;

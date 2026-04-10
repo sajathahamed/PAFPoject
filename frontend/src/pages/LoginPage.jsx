@@ -7,15 +7,19 @@ import '../styles/ClassicHero.css';
 
 function roleToPath(role) {
   switch (role) {
-    case 'TECHNICIAN': return '/technician/dashboard';
-    case 'LECTURER':   return '/lecturer/home';
-    case 'ADMIN':    return '/admin/home';
-    default:       return '/student/home';
+    case 'TECHNICIAN':
+      return '/dashboard';
+    case 'LECTURER':
+      return '/dashboard';
+    case 'ADMIN':
+      return '/dashboard';
+    default:
+      return '/dashboard';
   }
 }
 
 const LoginPage = () => {
-  const { loginWithGoogle, login } = useAuth();
+  const { loginWithGoogle, login, user, loading: authLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,14 +27,16 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
-
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (user && !busy) {
-      navigate(roleToPath(user.role), { replace: true });
-    }
-  }, [navigate, from, busy]);
+    if (authLoading || busy) return;
+    if (!isAuthenticated || !user) return;
+    const intended = location.state?.from?.pathname;
+    const dest =
+      intended && intended !== '/login' && !intended.startsWith('/oauth-callback')
+        ? intended
+        : roleToPath(user.role);
+    navigate(dest, { replace: true });
+  }, [authLoading, busy, isAuthenticated, user, navigate, location.state]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,6 +68,16 @@ const LoginPage = () => {
       setBusy(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="hero-container">
+        <div className="hero-form-container">
+          <div className="spinner" />
+        </div>
+      </div>
+    );
+  }
 
   if (busy) {
     return (

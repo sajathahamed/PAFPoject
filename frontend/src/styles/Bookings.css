@@ -1,0 +1,128 @@
+/* Booking module — aligned with dashboard / sidebar accent */
+
+.conflict-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(220, 53, 69, 0.04) 100%);
+  border: 1px solid rgba(220, 53, 69, 0.35);
+  color: #842029;
+  margin-bottom: 20px;
+}
+
+.conflict-warning-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.conflict-warning ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.booking-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.booking-status-badge.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #856404;
+}
+
+.booking-status-badge.approved {
+  background: rgba(33, 173, 161, 0.18);
+  color: #0d6b63;
+}
+
+.booking-status-badge.rejected {
+  background: rgba(220, 53, 69, 0.15);
+  color: #842029;
+}
+
+.booking-status-badge.cancelled {
+  background: rgba(108, 117, 125, 0.2);
+  color: #495057;
+}
+
+.booking-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.booking-toolbar .form-group {
+  margin-bottom: 0;
+  min-width: 140px;
+}
+
+.booking-day-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.booking-day-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.booking-day-toggle input {
+  margin: 0;
+}
+
+.booking-meta-block {
+  background: #f8fafb;
+  border: 1px solid #e8f0ee;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+.booking-meta-block h4 {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.booking-meta-block p {
+  margin: 0;
+  font-size: 14px;
+  color: #1a2d4a;
+  line-height: 1.5;
+}
+
+.page-header.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.flex.gap-1 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

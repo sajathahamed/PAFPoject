@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
-import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -12,6 +11,11 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+import DashboardSidebar from './components/DashboardSidebar';
+import MyBookingsPage from './pages/MyBookingsPage';
+import CreateBookingPage from './pages/CreateBookingPage';
+import BookingDetailPage from './pages/BookingDetailPage';
+import AdminBookingsPage from './pages/AdminBookingsPage';
 
 function roleToPath(role) {
   switch (role) {
@@ -42,10 +46,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* Navigation - only shows when authenticated */}
-      <Navbar />
-
-      {/* Main content area */}
       <main>
         <Routes>
           {/* Public routes */}
@@ -108,6 +108,51 @@ function App() {
             }
           />
 
+          <Route
+            path="/admin/bookings"
+            element={
+              <ProtectedRoute roles="ADMIN">
+                <AdminBookingsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
+                <Navigate to="/bookings/my" replace />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/bookings/my"
+            element={
+              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
+                <MyBookingsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/bookings/new"
+            element={
+              <ProtectedRoute roles={['STUDENT', 'LECTURER']}>
+                <CreateBookingPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/bookings/:id"
+            element={
+              <ProtectedRoute>
+                <BookingDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Student Tickets */}
           <Route
             path="/student/tickets"
@@ -133,9 +178,17 @@ function App() {
             path="/work-orders"
             element={
               <ProtectedRoute roles={['ADMIN', 'TECHNICIAN']}>
-                <div className="container" style={{ paddingTop: '24px' }}>
-                  <h1>Work Orders</h1>
-                  <p>Work orders management coming soon...</p>
+                <div className="dashboard-layout">
+                  <DashboardSidebar />
+                  <div className="dashboard-content">
+                    <div className="page-header">
+                      <h1 className="page-title">Work orders</h1>
+                      <p className="page-subtitle">Maintenance work order management</p>
+                    </div>
+                    <div className="card">
+                      <p style={{ color: '#64748b' }}>Work orders management coming soon.</p>
+                    </div>
+                  </div>
                 </div>
               </ProtectedRoute>
             }

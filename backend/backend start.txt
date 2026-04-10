@@ -1,1 +1,9 @@
-$env:JAVA_HOME = "$env:USERPROFILE\scoop\apps\openjdk17\current"; $env:PATH = "$env:JAVA_HOME\bin;$env:USERPROFILE\maven\apache-maven-3.9.6\bin;$env:PATH"; mvn spring-boot:run 
+Rebuild (Maven phase is compile, not complie):
+$env:JAVA_HOME = "C:\Java\jdk-21_windows-x64_bin\jdk-21.0.10"; $env:PATH = "$env:JAVA_HOME\bin;C:\Maven\apache-maven-3.8.9-bin\apache-maven-3.8.9\bin;$env:PATH"; mvn clean compile -DskipTests
+
+Run:
+$env:JAVA_HOME = "C:\Java\jdk-21_windows-x64_bin\jdk-21.0.10"; $env:PATH = "$env:JAVA_HOME\bin;C:\Maven\apache-maven-3.8.9-bin\apache-maven-3.8.9\bin;$env:PATH"; mvn spring-boot:run
+
+
+Shalomiyal own laptop:
+$env:JAVA_HOME = "C:\Java\jdk-21_windows-x64_bin\jdk-21.0.10"; $env:PATH = "$env:JAVA_HOME\bin;C:\Maven\apache-maven-3.8.9-bin\apache-maven-3.8.9\bin;$env:PATH"; mvn spring-boot:run
