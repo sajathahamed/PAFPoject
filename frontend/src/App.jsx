@@ -162,7 +162,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <BookingDetailPage />
-
               </ProtectedRoute>
             }
           />
