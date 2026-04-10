@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
-import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -12,6 +11,7 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+import NotificationsPage from './pages/NotificationsPage';
 
 function roleToPath(role) {
   switch (role) {
@@ -42,10 +42,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* Navigation - only shows when authenticated */}
-      <Navbar />
-
-      {/* Main content area */}
       <main>
         <Routes>
           {/* Public routes */}
@@ -104,6 +100,16 @@ function App() {
             element={
               <ProtectedRoute roles="ADMIN">
                 <AdminUsers />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />

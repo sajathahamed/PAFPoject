@@ -52,9 +52,17 @@ public class AuthController {
     public ResponseEntity<TokenResponse> login(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
-        log.debug("Received login request for email: {}", request.getEmail());
-        TokenResponse tokenResponse = authService.login(request, response);
-        return ResponseEntity.ok(tokenResponse);
+        log.info("Received login request for email: {}", request.getEmail());
+        log.debug("Request body: email={}", request.getEmail());
+        
+        try {
+            TokenResponse tokenResponse = authService.login(request, response);
+            log.info("Login successful for email: {}", request.getEmail());
+            return ResponseEntity.ok(tokenResponse);
+        } catch (Exception e) {
+            log.error("Login failed for email: {} - {}", request.getEmail(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     /**

@@ -10,9 +10,10 @@ import {
   Menu,
   X,
   GraduationCap,
-  Wrench,
-  Settings
+  Settings,
+  Bell
 } from 'lucide-react'
+import NotificationBell from './NotificationBell'
 import '../styles/DashboardSidebar.css'
 
 export default function DashboardSidebar() {
@@ -28,6 +29,7 @@ export default function DashboardSidebar() {
       case 'Tickets': return <Ticket size={20} />
       case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
+      case 'Notifications': return <Bell size={20} />
       default: return <User size={20} />
     }
   }
@@ -36,18 +38,22 @@ export default function DashboardSidebar() {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     TECHNICIAN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
   }
 
@@ -61,9 +67,12 @@ export default function DashboardSidebar() {
 
   return (
     <div className={`dashboard-sidebar ${isOpen ? 'open' : 'closed'}`}>
-      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      <div className="sidebar-top-bar">
+        <NotificationBell compact={!isOpen} />
+        <button type="button" className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
       {isOpen && (
         <div className="sidebar-brand">
