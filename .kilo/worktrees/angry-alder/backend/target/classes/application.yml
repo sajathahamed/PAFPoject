@@ -1,0 +1,73 @@
+# =============================================================================
+# Smart Campus Operations Hub - Module E: Authentication Configuration
+# =============================================================================
+
+spring:
+  application:
+    name: smart-campus-auth
+  
+  # =============================================================================
+  # Database Configuration (MongoDB)
+  # =============================================================================
+  data:
+    mongodb:
+      uri: mongodb+srv://PAFProject:PAF1234@pafproject.wkxkdsh.mongodb.net/smart_campus?appName=PAFProject
+  
+  # =============================================================================
+  # OAuth2 Configuration (Google)
+  # =============================================================================
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+# =============================================================================
+# JWT Configuration
+# =============================================================================
+jwt:
+  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLongForHS256Algorithm123456}
+  access-token:
+    expiration: 900000  # 15 minutes in milliseconds
+  refresh-token:
+    expiration: 604800000  # 7 days in milliseconds
+
+# =============================================================================
+# Application Configuration
+# =============================================================================
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:5173
+  oauth2:
+    # URL to redirect to after successful OAuth2 authentication
+    redirect-uri: http://localhost:5173/oauth-callback
+
+# =============================================================================
+# Server Configuration
+# =============================================================================
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+logging:
+  level:
+    com.smartcampus: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: INFO
