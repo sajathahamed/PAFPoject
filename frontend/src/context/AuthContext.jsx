@@ -1,13 +1,12 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import authService from '../services/authService';
+import { AuthContext } from './AuthContextInstance';
 
 /**
  * Authentication context for Smart Campus Operations Hub.
  * 
  * Provides global authentication state and methods to all components.
  */
-export const AuthContext = createContext(null);
-
 /**
  * Authentication provider component.
  * 
@@ -17,7 +16,7 @@ export const AuthContext = createContext(null);
  * - Manages loading state during auth checks
  * - Role-based access helper
  */
-export const AuthProvider = ({ children }) => {
+export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -186,4 +185,4 @@ export const AuthProvider = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}

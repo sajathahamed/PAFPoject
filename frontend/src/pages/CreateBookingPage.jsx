@@ -39,7 +39,7 @@ export default function CreateBookingPage() {
       try {
         const list = await bookingService.listResources();
         setResources(list);
-        if (list.length && !resourceId) setResourceId(list[0].id);
+        if (list.length) setResourceId((prev) => prev || list[0].id);
       } catch (err) {
         setLoadError(err.response?.data?.error || 'Could not load resources');
       }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import DashboardSidebar from '../components/DashboardSidebar';
 import useAuth from '../hooks/useAuth';
@@ -26,7 +26,7 @@ export default function BookingDetailPage() {
   const [userCancelReason, setUserCancelReason] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,11 +37,11 @@ export default function BookingDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     load();
-  }, [id]);
+  }, [load]);
 
   const isOwner = booking && user && booking.userId === user.id;
   const canUserCancel = isOwner && booking && (booking.status === 'PENDING' || booking.status === 'APPROVED');

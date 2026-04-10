@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { Users, Settings, BarChart3, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { Users, Settings, BarChart3, CheckCircle, AlertCircle } from 'lucide-react'
 
 const AdminHome = () => {
   const { user } = useAuth()

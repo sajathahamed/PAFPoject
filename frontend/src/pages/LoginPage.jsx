@@ -181,7 +181,7 @@ const LoginPage = () => {
 
             <div className="text-center mb-4">
               <p style={{ color: 'rgba(255,255,255,0.6)' }}>
-                Don't have an account? <Link to="/register" className="btn-link">Register</Link>
+                Don&apos;t have an account? <Link to="/register" className="btn-link">Register</Link>
               </p>
             </div>
           </motion.div>

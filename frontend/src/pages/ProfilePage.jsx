@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
 import { updateProfile, changePassword, uploadProfilePicture } from '../api/profile'
@@ -7,7 +6,6 @@ import '../styles/ProfilePage.css'
 
 const ProfilePage = () => {
   const { user, setUser } = useAuth()
-  const navigate = useNavigate()
   const fileInputRef = useRef(null)
   
   const [viewMode, setViewMode] = useState('view')

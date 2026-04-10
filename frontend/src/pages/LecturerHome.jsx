@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { GraduationCap, Clock, BookOpen, FileText } from 'lucide-react'
+import { GraduationCap, BookOpen, FileText } from 'lucide-react'
 
 const LecturerHome = () => {
   const { user } = useAuth()

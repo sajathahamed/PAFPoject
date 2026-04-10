@@ -13,7 +13,7 @@ const Unauthorized = () => {
         <div style={{ fontSize: '64px', marginBottom: '16px' }}>🚫</div>
         <h1>Access Denied</h1>
         <p className="mt-2" style={{ color: '#666' }}>
-          You don't have permission to access this page.
+          You don&apos;t have permission to access this page.
         </p>
         {user && (
           <p className="mt-1" style={{ color: '#888', fontSize: '14px' }}>
