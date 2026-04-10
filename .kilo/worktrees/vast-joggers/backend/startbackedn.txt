@@ -1,1 +1,0 @@
-$env:JAVA_HOME = "C:\Java\jdk-21_windows-x64_bin\jdk-21.0.10"; $env:MAVEN_HOME = "C:\Maven\apache-maven-3.9.14-bin\apache-maven-3.9.14"; $env:PATH = "$env:JAVA_HOME\bin;$env:MAVEN_HOME\bin;$env:PATH"; mvn spring-boot:run
