@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
-import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -10,11 +9,13 @@ import AdminHome from './pages/AdminHome';
 import AdminUsers from './pages/AdminUsers';
 import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
+import SolvedTickets from './pages/SolvedTickets';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
 import ResourcesPage from './pages/ResourcesPage';
 import AdminResourcesPage from './pages/AdminResourcesPage';
 import ResourceDetailPage from './pages/ResourceDetailPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 function roleToPath(role) {
   switch (role) {
@@ -26,15 +27,6 @@ function roleToPath(role) {
   }
 }
 
-/**
- * Main App component with routing configuration.
- * 
- * Route structure:
- * - Public routes: /login, /oauth-callback
- * - Protected routes (any authenticated user): /dashboard
- * - Admin-only routes: /admin/users
- * - Fallback: redirect to dashboard
- */
 function App() {
   const { user, loading } = useAuth();
 
@@ -46,10 +38,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* Navigation - only shows when authenticated */}
-      <Navbar />
-
-      {/* Main content area */}
       <main>
         <Routes>
           {/* Public routes */}
@@ -138,6 +126,16 @@ function App() {
             }
           />
 
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Student Tickets */}
           <Route
             path="/student/tickets"
@@ -158,7 +156,17 @@ function App() {
             }
           />
 
-          {/* Technician routes (placeholder) */}
+          {/* Technician Solved Tickets */}
+          <Route
+            path="/technician/solved"
+            element={
+              <ProtectedRoute roles="TECHNICIAN">
+                <SolvedTickets />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Work Orders */}
           <Route
             path="/work-orders"
             element={

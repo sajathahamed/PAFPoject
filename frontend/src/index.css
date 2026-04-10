@@ -280,65 +280,51 @@ a:hover {
   color: #e65100;
 }
 
-/* Navigation styles */
-.navbar {
-  background-color: #1976d2;
-  color: white;
-  padding: 0 20px;
-}
-
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 64px;
-}
-
-.navbar-brand {
-  font-size: 20px;
-  font-weight: 600;
-  color: white;
-}
-
-.navbar-brand:hover {
-  text-decoration: none;
-}
-
-.navbar-nav {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  list-style: none;
-}
-
-.nav-link {
-  color: rgba(255, 255, 255, 0.9);
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: white;
-  text-decoration: none;
-}
-
-.nav-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
 /* Page header */
 .page-header {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.page-header-left {
+  flex: 1;
+}
+
+.notification-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.notification-link:hover {
+  background: #21ada1;
+  color: white;
+}
+
+.notification-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #dc3545;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .page-title {
@@ -1868,4 +1854,100 @@ a:hover {
     width: 100px;
     height: 100px;
   }
+}
+
+/* Notifications Page */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-tab {
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+  border-color: #21ada1;
+  color: #21ada1;
+}
+
+.filter-tab.active {
+  background: #21ada1;
+  color: white;
+  border-color: #21ada1;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.2s ease;
+}
+
+button.notification-card {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.notification-card:hover {
+  background: #f8f9fa;
+}
+
+.notification-card.unread {
+  background: rgba(33, 173, 161, 0.05);
+}
+
+.notification-card.unread::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #21ada1;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.notification-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-text {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: #333;
+}
+
+.notification-date {
+  font-size: 12px;
+  color: #999;
 }

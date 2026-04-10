@@ -13,7 +13,8 @@ import {
   Wrench,
   Settings,
   Building2,
-  Boxes
+  Boxes,
+  Bell
 } from 'lucide-react'
 import '../styles/DashboardSidebar.css'
 
@@ -28,10 +29,12 @@ export default function DashboardSidebar() {
       case 'Dashboard': return <LayoutDashboard size={20} />
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
+      case 'Solved Tickets': return <Ticket size={20} />
       case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
       case 'Facilities': return <Building2 size={20} />
       case 'Resources': return <Boxes size={20} />
+      case 'Notifications': return <Bell size={20} />
       default: return <User size={20} />
     }
   }
@@ -41,20 +44,25 @@ export default function DashboardSidebar() {
       { label: 'Dashboard', path: '/student/home', icon: 'Dashboard' },
       { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/lecturer/home', icon: 'Dashboard' },
       { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     TECHNICIAN: [
-      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/technician/dashboard', icon: 'Dashboard' },
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
+      { label: 'Solved Tickets', path: '/technician/solved', icon: 'Solved Tickets' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/admin/home', icon: 'Dashboard' },
       { label: 'Resource Management', path: '/admin/resources', icon: 'Resources' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
   }
 

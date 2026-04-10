@@ -3,29 +3,56 @@
 *.iml
 .vscode/
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
+
+# ── Temporary files ────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# ── Log files ──────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Environment files ──────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
 
 # ── Backend secrets (NEVER commit these) ──────────────────────────────
 backend/src/main/resources/application-local.properties
 backend/src/main/resources/application-*.properties
 !backend/src/main/resources/application.properties
 
-# ── Backend build output ────────────────────────────────────────────
+# ── Backend build output ───────────────────────────────────────────────
 backend/target/
 
-# ── Frontend secrets ──────────────────────────────────────────────────
-frontend/.env
-frontend/.env.local
-frontend/.env.*.local
-
-# ── Node (anywhere in repo) ────────────────────────────────────────────
+# ── Node modules (everywhere) ─────────────────────────────────────────
 node_modules/
 
-# ── Frontend build / deps ──────────────────────────────────────────────
+# ── Frontend build / deps ─────────────────────────────────────────────
 frontend/dist/
 frontend/.vite/
 
-# ── Logs ────────────────────────────────────────────────────────────
-*.log
-logs/
+# ── MongoDB local data ─────────────────────────────────────────────────
+data/
+mongodb/
+
+# ── Docker ────────────────────────────────────────────────────────────
+.docker/
+docker-compose.override.yml
+
+# ── Secrets ───────────────────────────────────────────────────────────
+secrets/
+*.pem
+*.key
+*.resolved

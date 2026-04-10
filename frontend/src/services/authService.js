@@ -18,6 +18,9 @@ const authService = {
    */
   getCurrentUser: async () => {
     const response = await axiosInstance.get('/auth/me');
+    if (response.status === 204 || response.data == null || response.data === '') {
+      return null;
+    }
     return response.data;
   },
 
