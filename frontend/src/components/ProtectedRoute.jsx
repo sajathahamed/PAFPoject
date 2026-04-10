@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-
-export default function ProtectedRoute({ children }) {
-  // Read from localStorage directly — React state may not have committed yet
-  // when navigate() is called immediately after login.
-  const { jwt } = useAuth()
-  const token = jwt || localStorage.getItem('sc_jwt')
-
-  if (!token) {
-    return <Navigate to="/login" replace />
-  }
-
-  return children
-}
-=======
 import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
@@ -26,30 +9,6 @@ import useAuth from '../hooks/useAuth';
  * - Checks role-based access if roles provided
  * - Shows loading spinner during auth check
  * - Preserves intended destination for redirect after login
- * 
- * @param {Object} props
- * @param {React.ReactNode} props.children - Component to render if authorized
- * @param {string|string[]} [props.roles] - Required role(s) to access this route
- * @param {string} [props.redirectTo='/login'] - Where to redirect if not authenticated
- * @param {string} [props.unauthorizedTo='/unauthorized'] - Where to redirect if not authorized
- * 
- * @example
- * // Protected route - any authenticated user
- * <ProtectedRoute>
- *   <Dashboard />
- * </ProtectedRoute>
- * 
- * @example
- * // Admin-only route
- * <ProtectedRoute roles="ADMIN">
- *   <AdminPanel />
- * </ProtectedRoute>
- * 
- * @example
- * // Multiple roles allowed
- * <ProtectedRoute roles={['ADMIN', 'TECHNICIAN']}>
- *   <WorkOrders />
- * </ProtectedRoute>
  */
 const ProtectedRoute = ({
   children,
@@ -85,4 +44,4 @@ const ProtectedRoute = ({
 };
 
 export default ProtectedRoute;
->>>>>>> bd701d76c6f9bee465cf19d54b5d81dd77e597aa
+

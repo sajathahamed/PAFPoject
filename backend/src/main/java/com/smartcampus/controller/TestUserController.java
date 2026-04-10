@@ -18,14 +18,16 @@ public class TestUserController {
     @GetMapping("/user/{email}")
     public ResponseEntity<?> getUser(@PathVariable String email) {
         return userRepository.findByEmail(email)
-                .map(user -> ResponseEntity.ok(Map.of(
-                        "id", user.getId(),
-                        "email", user.getEmail(),
-                        "name", user.getName(),
-                        "role", user.getRole(),
-                        "password_hash", user.getPassword() != null ? user.getPassword() : "null",
-                        "created_at", user.getCreatedAt()
-                )))
+                .map(user -> {
+                    java.util.HashMap<String, Object> details = new java.util.HashMap<>();
+                    details.put("id", user.getId());
+                    details.put("email", user.getEmail());
+                    details.put("name", user.getName());
+                    details.put("role", user.getRole());
+                    details.put("password_hash", user.getPassword());
+                    details.put("created_at", user.getCreatedAt());
+                    return ResponseEntity.ok(details);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 

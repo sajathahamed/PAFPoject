@@ -7,14 +7,20 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.smartcampus.model.User;
 import com.smartcampus.repository.UserRepository;
 import com.smartcampus.security.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +29,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -32,15 +39,35 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${google.client.id}")
+    @Value("${google.client.id:}")
     private String googleClientId;
 
-    @Value("${technician.test.email}")
+    @Value("${technician.test.email:}")
     private String technicianTestEmail;
+
+    /**
+     * Get the currently authenticated user's profile.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Not authenticated"));
+        }
+
+        String userId = (String) authentication.getPrincipal();
+        Optional<User> userOpt = userRepository.findById(userId);
+        
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+        }
+
+        return ResponseEntity.ok(buildUserResponse(userOpt.get()));
+    }
 
     // ── Google OAuth2 callback ──────────────────────────────────────────────
     @PostMapping("/google/callback")
-    public ResponseEntity<?> googleCallback(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> googleCallback(@RequestBody Map<String, String> body, HttpServletResponse response) {
         String idTokenString = body.get("idToken");
         if (idTokenString == null || idTokenString.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "idToken is required"));
@@ -72,6 +99,8 @@ public class AuthController {
         User user = upsertGoogleUser(googleId, email, name, picture);
         String jwt = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
+        addTokenCookie(response, "accessToken", jwt, 24 * 60 * 60);
+
         return ResponseEntity.ok(Map.of(
                 "jwt", jwt,
                 "user", buildUserResponse(user)
@@ -80,7 +109,7 @@ public class AuthController {
 
     // ── Username / Password signup ─────────────────────────────────────────
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest req) {
+    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest req, HttpServletResponse response) {
         if (userRepository.existsByEmail(req.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("error", "Email already registered"));
@@ -99,6 +128,8 @@ public class AuthController {
         user = userRepository.save(user);
         String jwt = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
+        addTokenCookie(response, "accessToken", jwt, 24 * 60 * 60);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "jwt", jwt,
                 "user", buildUserResponse(user)
@@ -107,7 +138,8 @@ public class AuthController {
 
     // ── Username / Password login ──────────────────────────────────────────
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req, HttpServletResponse response) {
+        log.info("Login attempt for email: {}", req.email());
         Optional<User> optUser = userRepository.findByEmail(req.email());
         if (optUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -122,28 +154,47 @@ public class AuthController {
         }
 
         String jwt = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
+        
+        addTokenCookie(response, "accessToken", jwt, 24 * 60 * 60);
+
         return ResponseEntity.ok(Map.of(
                 "jwt", jwt,
                 "user", buildUserResponse(user)
         ));
     }
 
+    @DeleteMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
     // ── Helpers ────────────────────────────────────────────────────────────
 
+    private void addTokenCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
+    }
+
     private User upsertGoogleUser(String googleId, String email, String name, String picture) {
-        // Look up by email first (handles merging if they signed up with password before)
         Optional<User> existing = userRepository.findByEmail(email);
 
         if (existing.isPresent()) {
             User user = existing.get();
-            // Update Google-specific fields and keep existing role
             user.setGoogleId(googleId);
             if (name != null) user.setName(name);
             if (picture != null) user.setPicture(picture);
             return userRepository.save(user);
         }
 
-        // New user — determine role
         String role = resolveRoleForEmail(email, null);
 
         User newUser = User.builder()
@@ -159,25 +210,26 @@ public class AuthController {
     }
 
     private String resolveRoleForEmail(String email, String existingRole) {
-        // Keep existing role if already set
         if (existingRole != null && !existingRole.isBlank()) {
             return existingRole;
         }
-        // Dev/test override: grant TECHNICIAN to the configured test email
         if (email != null && email.equalsIgnoreCase(technicianTestEmail)) {
             return "TECHNICIAN";
         }
-        // Default role for all new users
+        // System admin check
+        if (email != null && email.equalsIgnoreCase("admin@smartcampus.com")) {
+            return "ADMIN";
+        }
         return "STUDENT";
     }
 
     private Map<String, Object> buildUserResponse(User user) {
         return Map.of(
-                "id",      user.getId(),
+                "id",      user.getId() != null ? user.getId() : "",
                 "name",    user.getName() != null ? user.getName() : "",
-                "email",   user.getEmail(),
+                "email",   user.getEmail() != null ? user.getEmail() : "",
                 "picture", user.getPicture() != null ? user.getPicture() : "",
-                "role",    user.getRole()
+                "role",    user.getRole() != null ? user.getRole() : "STUDENT"
         );
     }
 

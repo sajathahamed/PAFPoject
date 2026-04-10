@@ -1,36 +1,20 @@
-<<<<<<< HEAD
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-=======
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
->>>>>>> bd701d76c6f9bee465cf19d54b5d81dd77e597aa
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    strictPort: true,
     proxy: {
-<<<<<<< HEAD
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/auth': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    },
-  },
-})
-=======
-      // Proxy API requests to backend during development
+      // Proxy API requests to backend
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
+        // Ensure /api stays in the path since backend handles it
+        rewrite: (path) => path
       },
       // Proxy OAuth2 endpoints
       '/oauth2': {
@@ -38,12 +22,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      '/login/oauth2': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
     },
   },
 });
->>>>>>> bd701d76c6f9bee465cf19d54b5d81dd77e597aa

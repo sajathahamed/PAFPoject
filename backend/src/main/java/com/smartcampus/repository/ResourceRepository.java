@@ -11,13 +11,14 @@ import java.util.List;
 @Repository
 public interface ResourceRepository extends MongoRepository<Resource, String> {
     
-    // Custom query to find resources matching all filters if provided
-    @Query("{ " +
-            "   $and: [ " +
-            "       { $or: [ { $expr: { $eq: ['?0', 'null'] } }, { 'type': ?0 } ] }, " +
-            "       { $or: [ { $expr: { $eq: [?1, null] } }, { 'capacity': { $gte: ?1 } } ] }, " +
-            "       { $or: [ { $expr: { $eq: ['?2', ''] } }, { 'location': { $regex: ?2, $options: 'i' } } ] } " +
-            "   ] " +
-            "}")
-    List<Resource> findByFilters(ResourceType type, Integer minCapacity, String location);
+    List<Resource> findByTypeAndCapacityGreaterThanEqualAndLocationContainingIgnoreCase(
+            ResourceType type, 
+            Integer minCapacity, 
+            String location
+    );
+    
+    List<Resource> findByCapacityGreaterThanEqualAndLocationContainingIgnoreCase(
+            Integer minCapacity, 
+            String location
+    );
 }

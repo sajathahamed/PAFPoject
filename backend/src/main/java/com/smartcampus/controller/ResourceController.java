@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,14 +38,14 @@ public class ResourceController {
 
     // POST /api/resources
     @PostMapping
-    // @PreAuthorize("hasRole('ADMIN')") // Uncomment if method security is enabled
+    @PreAuthorize("hasRole('ADMIN')") 
     public ResponseEntity<ResourceResponseDto> createResource(@Valid @RequestBody ResourceRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(resourceService.createResource(dto));
     }
 
     // PUT /api/resources/{id}
     @PutMapping("/{id}")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResourceResponseDto> updateResource(
             @PathVariable String id,
             @Valid @RequestBody ResourceRequestDto dto) {
@@ -53,7 +54,7 @@ public class ResourceController {
 
     // DELETE /api/resources/{id}
     @DeleteMapping("/{id}")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteResource(@PathVariable String id) {
         resourceService.deleteResource(id);
         return ResponseEntity.noContent().build();
@@ -61,7 +62,7 @@ public class ResourceController {
 
     // PATCH /api/resources/{id}/status?status=OUT_OF_SERVICE
     @PatchMapping("/{id}/status")
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResourceResponseDto> updateResourceStatus(
             @PathVariable String id,
             @RequestParam ResourceStatus status) {

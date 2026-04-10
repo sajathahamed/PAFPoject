@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getResources } from '../api/resource'
 import ResourceCard from '../components/ResourceCard'
+import DashboardSidebar from '../components/DashboardSidebar'
+import { Search, Filter, Layers } from 'lucide-react'
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState([])
@@ -40,45 +42,72 @@ export default function ResourcesPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6">Resource Catalogue</h1>
+    <div className="dashboard-layout">
+      <DashboardSidebar />
+      <div className="dashboard-content">
+        <div className="page-header flex justify-between items-center mb-8">
+          <div>
+            <h1 className="page-title">Facilities Catalogue</h1>
+            <p className="page-subtitle">Explore and discover available campus resources and halls.</p>
+          </div>
+          <div className="header-actions">
+             <button className="btn btn-primary px-6">
+                <Layers size={16} /> All Facilities
+             </button>
+          </div>
+        </div>
 
-      <form onSubmit={handleSearch} className="mb-8 flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-md border">
-        <div>
-          <label className="block text-sm font-medium mb-1">Type</label>
-          <select name="type" value={filters.type} onChange={handleFilterChange} className="border px-3 py-2 rounded">
-            <option value="">All Types</option>
-            <option value="ROOM">Room</option>
-            <option value="LAB">Lab</option>
-            <option value="HALL">Hall</option>
-          </select>
+        <div className="card mb-8" style={{border: 'none', background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(8px)'}}>
+          <form onSubmit={handleSearch} className="form-grid">
+            <div className="form-group">
+              <label className="form-label" style={{fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold', color: 'var(--text-muted)'}}>
+                <Filter size={12} style={{marginRight: '4px'}} /> Resource Type
+              </label>
+              <select name="type" value={filters.type} onChange={handleFilterChange} className="form-select">
+                <option value="">All Types</option>
+                <option value="ROOM">Room</option>
+                <option value="LAB">Lab</option>
+                <option value="HALL">Hall</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label" style={{fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold', color: 'var(--text-muted)'}}>Min Capacity</label>
+              <input type="number" name="minCapacity" value={filters.minCapacity} onChange={handleFilterChange} className="form-input" placeholder="e.g. 50" />
+            </div>
+            <div className="form-group" style={{gridColumn: 'span 1'}}>
+              <label className="form-label" style={{fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold', color: 'var(--text-muted)'}}>Location / Block</label>
+              <input type="text" name="location" value={filters.location} onChange={handleFilterChange} className="form-input" placeholder="Search location..." />
+            </div>
+            <div className="form-group">
+              <button type="submit" className="btn btn-primary" style={{width: '100%', height: '42px', marginTop: 'auto'}}>
+                <Search size={18} /> Apply filters
+              </button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Min Capacity</label>
-          <input type="number" name="minCapacity" value={filters.minCapacity} onChange={handleFilterChange} className="border px-3 py-2 rounded w-32" placeholder="e.g. 10" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Location</label>
-          <input type="text" name="location" value={filters.location} onChange={handleFilterChange} className="border px-3 py-2 rounded" placeholder="Search location..." />
-        </div>
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 h-[42px]">
-          Filter / Search
-        </button>
-      </form>
 
-      {loading ? (
-        <p>Loading resources...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : resources.length === 0 ? (
-        <p>No resources found matching the criteria.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map(res => (
-            <ResourceCard key={res.id} resource={res} isAdmin={false} />
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <div className="py-20 flex flex-col items-center">
+            <div className="spinner mb-8" />
+            <p className="page-subtitle">Scanning campus resources...</p>
+          </div>
+        ) : error ? (
+          <div className="alert alert-error">
+             <p className="font-bold mb-2">Error Connection</p>
+             <p>{error}</p>
+          </div>
+        ) : resources.length === 0 ? (
+          <div className="card text-center py-20" style={{background: '#f8fafc', borderStyle: 'dashed'}}>
+            <p className="page-subtitle italic">No resources found matching your criteria. Try adjusting your filters.</p>
+          </div>
+        ) : (
+          <div className="resource-grid">
+            {resources.map(res => (
+              <ResourceCard key={res.id} resource={res} isAdmin={false} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

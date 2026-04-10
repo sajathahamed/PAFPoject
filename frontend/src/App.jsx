@@ -12,12 +12,16 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+import ResourcesPage from './pages/ResourcesPage';
+import AdminResourcesPage from './pages/AdminResourcesPage';
+import ResourceDetailPage from './pages/ResourceDetailPage';
 
 function roleToPath(role) {
   switch (role) {
-    case 'TECHNICIAN': return '/dashboard';
-    case 'LECTURER':   return '/dashboard';
-    case 'ADMIN':    return '/dashboard';
+    case 'TECHNICIAN': return '/technician/dashboard';
+    case 'LECTURER':   return '/lecturer/home';
+    case 'ADMIN':    return '/admin/home';
+    case 'STUDENT':    return '/student/home';
     default:       return '/dashboard';
   }
 }
@@ -104,6 +108,32 @@ function App() {
             element={
               <ProtectedRoute roles="ADMIN">
                 <AdminUsers />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Resource Catalogue Routes */}
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute>
+                <ResourcesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources/:id"
+            element={
+              <ProtectedRoute>
+                <ResourceDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/resources"
+            element={
+              <ProtectedRoute roles="ADMIN">
+                <AdminResourcesPage />
               </ProtectedRoute>
             }
           />

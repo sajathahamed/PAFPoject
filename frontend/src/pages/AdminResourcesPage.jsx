@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { getResources, createResource, updateResource, deleteResource, updateResourceStatus } from '../api/resource'
 import ResourceForm from '../components/ResourceForm'
 import ResourceCard from '../components/ResourceCard'
+import DashboardSidebar from '../components/DashboardSidebar'
+import { Plus, Layout, Pencil } from 'lucide-react'
 
 export default function AdminResourcesPage() {
   const [resources, setResources] = useState([])
@@ -64,55 +66,70 @@ export default function AdminResourcesPage() {
   const handleEdit = (resource) => {
     setEditingResource(resource)
     setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6">Manage Resources (Admin)</h1>
-      
-      {!showForm && (
-        <button 
-          onClick={() => setShowForm(true)} 
-          className="mb-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 inline-block"
-        >
-          + Add New Resource
-        </button>
-      )}
-
-      {showForm && (
-        <div className="mb-8">
-          <ResourceForm 
-            initialData={editingResource} 
-            onSubmit={handleSubmit} 
-            onCancel={() => { setShowForm(false); setEditingResource(null); }} 
-          />
-        </div>
-      )}
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map(res => (
-            <div key={res.id} className="relative group">
-               <ResourceCard 
-                 resource={res} 
-                 isAdmin={true} 
-                 onDelete={handleDelete}
-                 onStatusChange={handleStatusChange}
-               />
+    <div className="dashboard-layout">
+      <DashboardSidebar />
+      <div className="dashboard-content">
+        <div className="page-header flex justify-between items-center mb-8">
+          <div>
+            <h1 className="page-title">Resource Management</h1>
+            <p className="page-subtitle">Administrative panel to create, update, and manage campus facilities.</p>
+          </div>
+          <div className="header-actions">
+             {!showForm && (
                <button 
-                  onClick={() => handleEdit(res)}
-                  className="absolute top-2 right-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded hover:bg-yellow-200"
+                 onClick={() => setShowForm(true)} 
+                 className="btn btn-primary px-6"
                >
-                 Edit
+                 <Plus size={18} /> New Resource
                </button>
-            </div>
-          ))}
+             )}
+             <div className="action-btn" style={{backgroundColor: 'white'}}>
+                <Layout size={18} />
+             </div>
+          </div>
         </div>
-      )}
+
+        {showForm && (
+          <div className="resource-form-container mb-8">
+            <ResourceForm 
+              initialData={editingResource} 
+              onSubmit={handleSubmit} 
+              onCancel={() => { setShowForm(false); setEditingResource(null); }} 
+            />
+          </div>
+        )}
+
+        {loading ? (
+          <div className="py-20 flex flex-col items-center">
+            <div className="spinner mb-8" />
+            <p className="page-subtitle">Loading inventory...</p>
+          </div>
+        ) : error ? (
+          <div className="alert alert-error">
+             <p className="font-bold">System Error</p>
+             <p>{error}</p>
+          </div>
+        ) : (
+          <div className="resource-grid">
+            {resources.map(res => (
+              <ResourceCard 
+                key={res.id}
+                resource={res} 
+                isAdmin={true} 
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onEdit={handleEdit}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
+
+

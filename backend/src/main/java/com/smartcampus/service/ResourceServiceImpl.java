@@ -21,18 +21,17 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<ResourceResponseDto> getAllResources(ResourceType type, Integer minCapacity, String location) {
-        // If all parameters are null/empty, we want all resources. 
-        // Using custom @Query or simply filtering in Java if list is small. 
-        // For production, using Query DSL, ExampleMatcher, or MongoTemplate is common.
-        // As a simple approach for this coursework, let's fetch all and filter in memory 
-        // OR rely on custom repository method. Let's use standard Java stream for flexible null-safe filtering.
+        int capacity = minCapacity != null ? minCapacity : 0;
+        String loc = location != null ? location : "";
         
-        List<Resource> resources = resourceRepository.findAll();
+        List<Resource> resources;
+        if (type != null) {
+            resources = resourceRepository.findByTypeAndCapacityGreaterThanEqualAndLocationContainingIgnoreCase(type, capacity, loc);
+        } else {
+            resources = resourceRepository.findByCapacityGreaterThanEqualAndLocationContainingIgnoreCase(capacity, loc);
+        }
         
         return resources.stream()
-                .filter(r -> type == null || r.getType() == type)
-                .filter(r -> minCapacity == null || r.getCapacity() >= minCapacity)
-                .filter(r -> location == null || location.isEmpty() || r.getLocation().toLowerCase().contains(location.toLowerCase()))
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }

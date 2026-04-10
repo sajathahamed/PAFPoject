@@ -11,7 +11,9 @@ import {
   X,
   GraduationCap,
   Wrench,
-  Settings
+  Settings,
+  Building2,
+  Boxes
 } from 'lucide-react'
 import '../styles/DashboardSidebar.css'
 
@@ -28,17 +30,21 @@ export default function DashboardSidebar() {
       case 'Tickets': return <Ticket size={20} />
       case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
+      case 'Facilities': return <Building2 size={20} />
+      case 'Resources': return <Boxes size={20} />
       default: return <User size={20} />
     }
   }
 
   const roleMenus = {
     STUDENT: [
-      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/student/home', icon: 'Dashboard' },
+      { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
     ],
     LECTURER: [
-      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/lecturer/home', icon: 'Dashboard' },
+      { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
     ],
     TECHNICIAN: [
@@ -46,7 +52,8 @@ export default function DashboardSidebar() {
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
     ],
     ADMIN: [
-      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/admin/home', icon: 'Dashboard' },
+      { label: 'Resource Management', path: '/admin/resources', icon: 'Resources' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
     ],
   }

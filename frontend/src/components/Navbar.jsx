@@ -15,7 +15,7 @@ const Navbar = () => {
     return null;
   }
 
-  const hideOnPaths = ['/dashboard', '/student', '/admin', '/technician', '/lecturer', '/profile', '/users'];
+  const hideOnPaths = ['/dashboard', '/student', '/admin', '/technician', '/lecturer', '/profile', '/users', '/resources'];
   const shouldHide = hideOnPaths.some(path => location.pathname.startsWith(path));
 
   if (shouldHide) {

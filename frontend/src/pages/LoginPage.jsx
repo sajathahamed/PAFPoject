@@ -7,15 +7,16 @@ import '../styles/ClassicHero.css';
 
 function roleToPath(role) {
   switch (role) {
+    case 'ADMIN':      return '/admin/home';
     case 'TECHNICIAN': return '/technician/dashboard';
     case 'LECTURER':   return '/lecturer/home';
-    case 'ADMIN':    return '/admin/home';
-    default:       return '/student/home';
+    case 'STUDENT':    return '/student/home';
+    default:           return '/dashboard';
   }
 }
 
 const LoginPage = () => {
-  const { loginWithGoogle, login } = useAuth();
+  const { loginWithGoogle, login, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,11 +27,12 @@ const LoginPage = () => {
   const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    if (user && !busy) {
-      navigate(roleToPath(user.role), { replace: true });
+    if (isAuthenticated && user && !busy) {
+      // Redirect based on role unless 'from' is explicitly set (like hitting a saved URL)
+      const target = from !== '/dashboard' ? from : roleToPath(user.role);
+      navigate(target, { replace: true });
     }
-  }, [navigate, from, busy]);
+  }, [isAuthenticated, user, navigate, from, busy]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

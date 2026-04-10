@@ -1,37 +1,79 @@
 import { Link } from 'react-router-dom'
+import { MapPin, Users, Info, Trash2, ToggleLeft, ToggleRight, Pencil } from 'lucide-react'
 
-export default function ResourceCard({ resource, isAdmin, onDelete, onStatusChange }) {
+export default function ResourceCard({ resource, isAdmin, onDelete, onStatusChange, onEdit }) {
+  const isActive = resource.status === 'ACTIVE'
+
   return (
-    <div className="border p-4 rounded-md shadow-sm bg-white hover:shadow-md transition">
-      <h3 className="text-xl font-semibold mb-2">{resource.name}</h3>
-      <p className="text-sm text-gray-600 mb-1">Type: <span className="font-medium">{resource.type}</span></p>
-      <p className="text-sm text-gray-600 mb-1">Capacity: <span className="font-medium">{resource.capacity}</span></p>
-      <p className="text-sm text-gray-600 mb-2">Location: <span className="font-medium">{resource.location}</span></p>
-      
-      <div className="mb-4">
-        <span className={`text-xs px-2 py-1 rounded ${resource.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {resource.status}
-        </span>
+    <div className="resource-card">
+      {/* Card body */}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
+          <h3 className="brand-name" style={{ fontSize: '1.2rem', color: 'var(--secondary)', flex: 1, minWidth: 0 }}>
+            {resource.name}
+          </h3>
+          <span
+            className={`resource-status-badge ${isActive ? 'status-active' : 'status-out-of-service'}`}
+            style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+          >
+            {isActive ? 'ACTIVE' : 'OUT OF SERVICE'}
+          </span>
+        </div>
+
+        <div className="resource-info-list" style={{ marginBottom: '20px' }}>
+          <div className="resource-info-item">
+            <Info size={16} />
+            <span><strong>Type:</strong> {resource.type}</span>
+          </div>
+          <div className="resource-info-item">
+            <Users size={16} />
+            <span><strong>Capacity:</strong> {resource.capacity} Seats</span>
+          </div>
+          <div className="resource-info-item">
+            <MapPin size={16} />
+            <span><strong>Location:</strong> {resource.location}</span>
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-between items-center mt-4 border-t pt-4">
-        <Link to={`/resources/${resource.id}`} className="text-blue-600 hover:underline text-sm">
-          View Details
+      {/* Card footer: view details + admin action buttons */}
+      <div className="resource-card-footer">
+        <Link
+          to={`/resources/${resource.id}`}
+          className="nav-link"
+          style={{ color: 'var(--primary)', fontWeight: '600', fontSize: '14px' }}
+        >
+          View details <span style={{ marginLeft: '4px' }}>→</span>
         </Link>
-        
+
         {isAdmin && (
-          <div className="flex gap-2">
+          <div className="resource-actions">
+            {/* Edit button */}
             <button
-              onClick={() => onStatusChange(resource.id, resource.status === 'ACTIVE' ? 'OUT_OF_SERVICE' : 'ACTIVE')}
-              className="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded"
+              onClick={() => onEdit && onEdit(resource)}
+              className="action-btn"
+              title="Edit Resource"
             >
-              Toggle Status
+              <Pencil size={14} />
             </button>
+
+            {/* Toggle Status button */}
+            <button
+              onClick={() => onStatusChange(resource.id, isActive ? 'OUT_OF_SERVICE' : 'ACTIVE')}
+              className={`action-btn ${isActive ? '' : 'btn-activate'}`}
+              title={isActive ? 'Deactivate' : 'Activate'}
+              style={{ color: isActive ? '#d97706' : '#059669' }}
+            >
+              {isActive ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+            </button>
+
+            {/* Delete button */}
             <button
               onClick={() => onDelete(resource.id)}
-              className="text-xs bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded"
+              className="action-btn btn-delete"
+              title="Delete Resource"
             >
-              Delete
+              <Trash2 size={14} />
             </button>
           </div>
         )}

@@ -1,32 +1,5 @@
-<<<<<<< HEAD
-import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-
-export default function Unauthorized() {
-  const { user, logout } = useAuth()
-
-  return (
-    <div className="unauth-page">
-      <h2>Access Denied</h2>
-      <p>
-        You don't have permission to view this page.
-        {user && ` Your account role is ${user.role}.`}
-      </p>
-      {user ? (
-        <button className="btn-logout" onClick={logout} style={{ marginTop: 16 }}>
-          Log out
-        </button>
-      ) : (
-        <Link to="/login" style={{ marginTop: 16, display: 'inline-block' }}>
-          Back to login
-        </Link>
-      )}
-    </div>
-  )
-}
-=======
 import { Link } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Unauthorized page - shown when user lacks required role.
@@ -58,4 +31,4 @@ const Unauthorized = () => {
 };
 
 export default Unauthorized;
->>>>>>> bd701d76c6f9bee465cf19d54b5d81dd77e597aa
+
