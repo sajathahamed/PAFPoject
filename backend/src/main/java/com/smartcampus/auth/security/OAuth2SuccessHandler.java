@@ -109,17 +109,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
      * SameSite: Lax for CSRF protection while allowing OAuth redirects
      */
     private void addTokenCookie(HttpServletResponse response, String name, String value, int maxAgeSeconds) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Set to true in production with HTTPS
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAgeSeconds);
-        // Note: SameSite attribute requires manual header setting in older servlet versions
-        response.addCookie(cookie);
-        
-        // Add SameSite=Lax via header for browsers that support it
-        String headerValue = String.format("%s=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax", 
-                                           name, value, maxAgeSeconds);
-        response.addHeader("Set-Cookie", headerValue);
+        String cookieHeader = String.format(
+                "%s=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax",
+                name, value, maxAgeSeconds);
+        log.debug("Setting cookie: {}", cookieHeader);
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 }

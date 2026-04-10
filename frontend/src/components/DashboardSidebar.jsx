@@ -9,10 +9,17 @@ import {
   LogOut, 
   Menu,
   X,
+<<<<<<< HEAD
   Settings,
   Calendar,
   ClipboardList
+=======
+  GraduationCap,
+  Settings,
+  Bell
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 } from 'lucide-react'
+import NotificationBell from './NotificationBell'
 import '../styles/DashboardSidebar.css'
 
 export default function DashboardSidebar() {
@@ -27,8 +34,12 @@ export default function DashboardSidebar() {
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
       case 'User Management': return <Users size={20} />
+<<<<<<< HEAD
       case 'My Bookings': return <Calendar size={20} />
       case 'All Bookings': return <ClipboardList size={20} />
+=======
+      case 'Notifications': return <Bell size={20} />
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
       default: return <User size={20} />
     }
   }
@@ -37,20 +48,31 @@ export default function DashboardSidebar() {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
+<<<<<<< HEAD
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
+=======
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
+    ],
+    LECTURER: [
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
     ],
     TECHNICIAN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
+      { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
   }
 
@@ -70,9 +92,12 @@ export default function DashboardSidebar() {
 
   return (
     <div className={`dashboard-sidebar ${isOpen ? 'open' : 'closed'}`}>
-      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      <div className="sidebar-top-bar">
+        <NotificationBell compact={!isOpen} />
+        <button type="button" className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
       {isOpen && (
         <div className="sidebar-brand">

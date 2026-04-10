@@ -11,11 +11,15 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+<<<<<<< HEAD
 import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingDetailPage from './pages/BookingDetailPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
+=======
+import NotificationsPage from './pages/NotificationsPage';
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 
 function roleToPath(role) {
   switch (role) {
@@ -108,6 +112,7 @@ function App() {
             }
           />
 
+<<<<<<< HEAD
           <Route
             path="/admin/bookings"
             element={
@@ -149,6 +154,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <BookingDetailPage />
+=======
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
               </ProtectedRoute>
             }
           />

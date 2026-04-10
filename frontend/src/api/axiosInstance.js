@@ -44,6 +44,12 @@ const processQueue = (error) => {
  * 2. If refresh succeeds, retry the original request
  * 3. If refresh fails, redirect to login page
  */
+/** Paths where 401 must not trigger refresh (wrong password, etc.) */
+function isAuthCredentialEndpoint(url) {
+  if (!url || typeof url !== 'string') return false;
+  return /auth\/(login|register)/.test(url);
+}
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -51,6 +57,11 @@ axiosInstance.interceptors.response.use(
 
     // If error is 401 and we haven't already tried to refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Login/register failures: return real error to the form (do not call refresh)
+      if (isAuthCredentialEndpoint(originalRequest.url)) {
+        return Promise.reject(error);
+      }
+
       // Don't retry refresh endpoint to avoid infinite loop
       if (originalRequest.url === '/auth/refresh') {
         // Refresh failed, redirect to login IF not already there
@@ -108,7 +119,10 @@ axiosInstance.interceptors.response.use(
 axiosInstance.interceptors.request.use(
   (config) => {
     if (import.meta.env.DEV) {
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
+        cookies: document.cookie,
+        withCredentials: config.withCredentials
+      });
     }
     return config;
   },

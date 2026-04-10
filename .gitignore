@@ -1,0 +1,31 @@
+# Dependencies
+**/node_modules/
+
+# Vite / React build output
+frontend/dist/
+
+# Java / Maven build output
+backend/target/
+**/target/
+
+# Logs
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Cursor/AI tooling
+.kilo/
+
+# Environment files / secrets
+.env
+.env.*
+
+# Local backend overrides
+backend/src/main/resources/application-local.yml
+
+# Local helper scripts / notes
+backend/backend start.txt
