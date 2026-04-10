@@ -17,6 +17,9 @@ import {
   GraduationCap,
   Settings,
   Bell
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 } from 'lucide-react'
 import NotificationBell from './NotificationBell'
@@ -35,8 +38,12 @@ export default function DashboardSidebar() {
       case 'Tickets': return <Ticket size={20} />
       case 'User Management': return <Users size={20} />
 <<<<<<< HEAD
+<<<<<<< HEAD
       case 'My Bookings': return <Calendar size={20} />
       case 'All Bookings': return <ClipboardList size={20} />
+=======
+      case 'Notifications': return <Bell size={20} />
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 =======
       case 'Notifications': return <Bell size={20} />
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
@@ -49,18 +56,24 @@ export default function DashboardSidebar() {
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
 <<<<<<< HEAD
+<<<<<<< HEAD
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
 =======
+=======
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
     ],
     TECHNICIAN: [

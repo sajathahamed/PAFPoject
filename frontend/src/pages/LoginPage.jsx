@@ -15,6 +15,7 @@ function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN':
 <<<<<<< HEAD
+<<<<<<< HEAD
       return '/dashboard';
     case 'LECTURER':
       return '/dashboard';
@@ -23,6 +24,8 @@ function roleToPath(role) {
     default:
       return '/dashboard';
 =======
+=======
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
       return '/technician/dashboard';
     case 'LECTURER':
       return '/lecturer/home';
@@ -30,13 +33,20 @@ function roleToPath(role) {
       return '/admin/home';
     default:
       return '/student/home';
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
   }
 }
 
 const LoginPage = () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { loginWithGoogle, login, user, loading: authLoading, isAuthenticated } = useAuth();
+=======
+  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 =======
   const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
@@ -50,6 +60,7 @@ const LoginPage = () => {
 
   useEffect(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (authLoading || busy) return;
     if (!isAuthenticated || !user) return;
     const intended = location.state?.from?.pathname;
@@ -60,10 +71,15 @@ const LoginPage = () => {
     navigate(dest, { replace: true });
   }, [authLoading, busy, isAuthenticated, user, navigate, location.state]);
 =======
+=======
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
     if (isAuthenticated && user) {
       navigate(roleToPath(user.role), { replace: true });
     }
   }, [isAuthenticated, user, navigate, from]);
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 
   const handleChange = (e) => {
@@ -223,12 +239,18 @@ const LoginPage = () => {
             <div className="text-center mb-4">
               <p style={{ color: 'rgba(255,255,255,0.6)' }}>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Don&apos;t have an account? <Link to="/register" className="btn-link">Register</Link>
 =======
+=======
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
                 Don&apos;t have an account?{' '}
                 <Link to="/register" className="btn-link">
                   Register
                 </Link>
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
               </p>
             </div>

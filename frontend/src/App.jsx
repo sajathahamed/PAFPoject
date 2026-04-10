@@ -12,11 +12,15 @@ import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingDetailPage from './pages/BookingDetailPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
+=======
+import NotificationsPage from './pages/NotificationsPage';
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
 =======
 import NotificationsPage from './pages/NotificationsPage';
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
@@ -113,6 +117,7 @@ function App() {
           />
 
 <<<<<<< HEAD
+<<<<<<< HEAD
           <Route
             path="/admin/bookings"
             element={
@@ -155,12 +160,17 @@ function App() {
               <ProtectedRoute>
                 <BookingDetailPage />
 =======
+=======
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
           {/* Notifications */}
           <Route
             path="/notifications"
             element={
               <ProtectedRoute>
                 <NotificationsPage />
+<<<<<<< HEAD
+>>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=======
 >>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
               </ProtectedRoute>
             }
