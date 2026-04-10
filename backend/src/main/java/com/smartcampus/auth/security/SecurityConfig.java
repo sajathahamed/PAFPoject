@@ -67,6 +67,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
             // Public endpoints
             .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/callback").permitAll()
+            // Google (and other) OAuth2 redirect flow — must be reachable without a session
+            .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             
             // Protected endpoints

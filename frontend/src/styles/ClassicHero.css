@@ -254,6 +254,16 @@
   font-weight: 500;
 }
 
+.alert-success {
+  background: rgba(33, 173, 161, 0.2);
+  color: #b8f5ee;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(33, 173, 161, 0.45);
+  font-weight: 500;
+}
+
 /* Divider */
 .divider {
   display: flex;

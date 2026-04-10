@@ -24,9 +24,7 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
-        {/* Brand */}
-        <Link to="/dashboard" className="navbar-brand">
+      <Link to="/dashboard" className="navbar-brand">
           🏫 Smart Campus
         </Link>
 
@@ -109,7 +107,6 @@ const Navbar = () => {
             </button>
           </li>
         </ul>
-      </div>
     </nav>
   );
 };

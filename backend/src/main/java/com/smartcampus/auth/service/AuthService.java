@@ -76,7 +76,11 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidTokenException("Invalid email or password"));
 
-        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (user.getPassword() == null) {
+            throw new InvalidTokenException(
+                    "This account signs in with Google. Use \"Continue with Google\" below.");
+        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidTokenException("Invalid email or password");
         }
 
@@ -285,32 +289,19 @@ public class AuthService {
      * Add a token cookie to the response.
      */
     private void addTokenCookie(HttpServletResponse response, String name, String value, int maxAgeSeconds) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Set to true in production
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAgeSeconds);
-        response.addCookie(cookie);
-        
-        // Add with SameSite attribute
-        String headerValue = String.format("%s=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax", 
-                                           name, value, maxAgeSeconds);
-        response.addHeader("Set-Cookie", headerValue);
+        String cookieHeader = String.format(
+                "%s=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax",
+                name, value, maxAgeSeconds);
+        log.debug("Setting cookie: {}", cookieHeader);
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     /**
      * Clear a cookie by setting max age to 0.
      */
     private void clearCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        
-        // Clear with SameSite attribute
-        String headerValue = String.format("%s=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax", name);
-        response.addHeader("Set-Cookie", headerValue);
+        String cookieHeader = String.format("%s=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax", name);
+        log.debug("Clearing cookie: {}", cookieHeader);
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 }
