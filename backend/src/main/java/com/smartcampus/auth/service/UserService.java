@@ -8,6 +8,7 @@ import com.smartcampus.auth.exception.ResourceNotFoundException;
 import com.smartcampus.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional(readOnly = true)
-    public User getUserById(String id) {
+    public User getUserById(@NonNull String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
@@ -64,7 +65,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional
-    public User updateUserRole(String userId, Role newRole) {
+    public User updateUserRole(@NonNull String userId, @NonNull Role newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -85,7 +86,7 @@ public class UserService {
      * @throws ResourceNotFoundException if user not found
      */
     @Transactional(readOnly = true)
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(@NonNull String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
@@ -133,7 +134,7 @@ public class UserService {
      * @return the updated user
      */
     @Transactional
-    public User updateUser(String userId, AdminUserUpdateRequest request) {
+    public User updateUser(@NonNull String userId, @NonNull AdminUserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 

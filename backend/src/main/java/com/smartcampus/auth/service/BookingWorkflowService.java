@@ -8,7 +8,10 @@ import com.smartcampus.auth.entity.RelatedEntityType;
 import com.smartcampus.auth.exception.ResourceNotFoundException;
 import com.smartcampus.auth.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -17,12 +20,23 @@ public class BookingWorkflowService {
     private final BookingRepository bookingRepository;
     private final NotificationService notificationService;
 
-    public BookingResponse updateStatus(String bookingId, BookingStatus newStatus) {
+    public BookingResponse updateStatus(@NonNull String bookingId, @NonNull BookingStatus newStatus) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         BookingStatus previous = booking.getStatus();
         booking.setStatus(newStatus);
+
+        if (newStatus == BookingStatus.APPROVED && booking.getApprovedAt() == null) {
+            booking.setApprovedAt(LocalDateTime.now());
+        }
+        if (newStatus == BookingStatus.REJECTED && booking.getRejectedAt() == null) {
+            booking.setRejectedAt(LocalDateTime.now());
+        }
+        if (newStatus == BookingStatus.CANCELLED && booking.getCancelledAt() == null) {
+            booking.setCancelledAt(LocalDateTime.now());
+        }
+
         Booking saved = bookingRepository.save(booking);
 
         String ownerId = saved.getUserId();

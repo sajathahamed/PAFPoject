@@ -33,6 +33,7 @@ import java.util.UUID;
  * - Token refresh functionality
  * - Logout with token revocation
  */
+@SuppressWarnings("unused")
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -280,8 +281,9 @@ public class AuthService {
                 .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000))
                 .revoked(false)
                 .build();
-        
-        refreshTokenRepository.save(refreshToken);
+
+        RefreshToken saved = refreshTokenRepository.save(refreshToken);
+        log.debug("Refresh token saved with ID: {}", saved.getId());
         return tokenValue;
     }
 

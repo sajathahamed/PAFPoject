@@ -11,15 +11,13 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
-<<<<<<<<< Temporary merge branch 1
 import NotificationsPage from './pages/NotificationsPage';
-=========
 import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingDetailPage from './pages/BookingDetailPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
->>>>>>>>> Temporary merge branch 2
+
 
 function roleToPath(role) {
   switch (role) {
@@ -112,41 +110,26 @@ function App() {
             }
           />
 
-<<<<<<<<< Temporary merge branch 1
+
           {/* Notifications */}
           <Route
             path="/notifications"
             element={
               <ProtectedRoute>
                 <NotificationsPage />
-=========
-          <Route
-            path="/admin/bookings"
-            element={
-              <ProtectedRoute roles="ADMIN">
-                <AdminBookingsPage />
               </ProtectedRoute>
             }
           />
 
-          <Route
-            path="/bookings"
-            element={
-              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
-                <Navigate to="/bookings/my" replace />
-              </ProtectedRoute>
-            }
-          />
-
+          {/* Bookings */}
           <Route
             path="/bookings/my"
             element={
-              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
+              <ProtectedRoute roles={['STUDENT', 'LECTURER']}>
                 <MyBookingsPage />
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/bookings/new"
             element={
@@ -155,13 +138,20 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/bookings/:id"
             element={
               <ProtectedRoute>
                 <BookingDetailPage />
->>>>>>>>> Temporary merge branch 2
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/bookings"
+            element={
+              <ProtectedRoute roles="ADMIN">
+                <AdminBookingsPage />
               </ProtectedRoute>
             }
           />

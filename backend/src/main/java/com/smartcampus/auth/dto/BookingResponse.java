@@ -12,11 +12,18 @@ import java.time.LocalDateTime;
 public class BookingResponse {
     private String id;
     private String resourceId;
+    private String resourceName;
     private String userId;
+    private String userName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private BookingStatus status;
     private String purpose;
+    private String rejectionReason;
+    private String decisionBy;
+    private LocalDateTime approvedAt;
+    private LocalDateTime rejectedAt;
+    private LocalDateTime cancelledAt;
     private LocalDateTime createdAt;
 
     public static BookingResponse fromEntity(Booking b) {
@@ -28,7 +35,19 @@ public class BookingResponse {
                 .endTime(b.getEndTime())
                 .status(b.getStatus())
                 .purpose(b.getPurpose())
+                .rejectionReason(b.getRejectionReason())
+                .decisionBy(b.getDecisionBy())
+                .approvedAt(b.getApprovedAt())
+                .rejectedAt(b.getRejectedAt())
+                .cancelledAt(b.getCancelledAt())
                 .createdAt(b.getCreatedAt())
                 .build();
+    }
+
+    public static BookingResponse fromEntity(Booking b, String userName, String resourceName) {
+        BookingResponse r = fromEntity(b);
+        r.setUserName(userName);
+        r.setResourceName(resourceName);
+        return r;
     }
 }

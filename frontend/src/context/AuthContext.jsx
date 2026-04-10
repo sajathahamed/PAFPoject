@@ -1,8 +1,5 @@
-<<<<<<<<< Temporary merge branch 1
+
 import { createContext, useState, useEffect, useCallback, useRef } from 'react';
-=========
-import { useState, useEffect, useCallback } from 'react';
->>>>>>>>> Temporary merge branch 2
 import authService from '../services/authService';
 
 /**

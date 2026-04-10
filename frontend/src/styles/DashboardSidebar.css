@@ -32,7 +32,6 @@
   width: 80px;
 }
 
-<<<<<<<<< Temporary merge branch 1
 /* Top bar: bell + menu toggle */
 .sidebar-top-bar {
   display: flex;
@@ -53,13 +52,13 @@
 
 .dashboard-sidebar.closed .sidebar-top-bar .notification-bell-wrapper {
   flex: none;
-=========
-/* When collapsed, brand/user sections are hidden so the nav starts at the very top.
-   Add extra top padding to avoid overlapping the toggle button. */
-.dashboard-sidebar.closed .sidebar-nav {
-  padding-top: 76px;
->>>>>>>>> Temporary merge branch 2
 }
+
+/* When collapsed, add space below the top bar */
+.dashboard-sidebar.closed .sidebar-nav {
+  padding-top: 16px;
+}
+ 
 
 /* Toggle Button */
 .sidebar-toggle {
