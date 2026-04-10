@@ -16,12 +16,26 @@ import com.smartcampus.auth.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Ticket Workflow Service - Handles all ticket-related business logic
+ * 
+ * Features:
+ * - Ticket creation and management
+ * - Status updates with notifications
+ * - Comment system for ticket discussions
+ * - Image upload and management (Base64 storage)
+ * - Technician assignment
+ */
 @Service
 @RequiredArgsConstructor
 public class TicketWorkflowService {
@@ -30,6 +44,9 @@ public class TicketWorkflowService {
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Create a new support ticket
+     */
     public TicketResponse createTicket(String reporterId, TicketCreateRequest request) {
         TicketPriority priority = request.getPriority() != null ? request.getPriority() : TicketPriority.MEDIUM;
         Ticket ticket = Ticket.builder()
@@ -38,23 +55,42 @@ public class TicketWorkflowService {
                 .description(request.getDescription().trim())
                 .priority(priority)
                 .status(TicketStatus.OPEN)
+                .images(new ArrayList<>())
                 .build();
         Ticket saved = ticketRepository.save(ticket);
         return TicketResponse.fromEntity(saved);
     }
 
+    /**
+     * Get a single ticket by ID
+     */
+    public TicketResponse getTicketById(String ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        return TicketResponse.fromEntity(ticket);
+    }
+
+    /**
+     * List tickets for a specific reporter (student)
+     */
     public List<TicketResponse> listTicketsForReporter(String reporterId) {
         return ticketRepository.findByReporterId(reporterId).stream()
                 .map(TicketResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * List all tickets for technician view
+     */
     public List<TicketResponse> listTicketsForTechnician() {
         return ticketRepository.findAll().stream()
                 .map(TicketResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Update ticket status and notify the reporter
+     */
     public TicketResponse updateTicketStatus(String ticketId, TicketStatus newStatus) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
@@ -76,6 +112,100 @@ public class TicketWorkflowService {
         return TicketResponse.fromEntity(saved);
     }
 
+    /**
+     * Assign a ticket to a technician
+     */
+    public TicketResponse assignTicket(String ticketId, String technicianId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        ticket.setAssignedId(technicianId);
+        if (ticket.getStatus() == TicketStatus.OPEN) {
+            ticket.setStatus(TicketStatus.IN_PROGRESS);
+        }
+        Ticket saved = ticketRepository.save(ticket);
+        
+        // Notify reporter about assignment
+        if (saved.getReporterId() != null) {
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                    saved.getReporterId(),
+                    NotificationType.TICKET_STATUS_CHANGED,
+                    "Technician assigned to your ticket",
+                    String.format("A technician has been assigned to your ticket: \"%s\"", summary),
+                    saved.getId(),
+                    RelatedEntityType.TICKET);
+        }
+        return TicketResponse.fromEntity(saved);
+    }
+
+    /**
+     * Add images to a ticket (stored as Base64 data URLs)
+     */
+    public TicketResponse addImagesToTicket(String ticketId, List<MultipartFile> images) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        List<String> existingImages = ticket.getImages();
+        if (existingImages == null) {
+            existingImages = new ArrayList<>();
+        }
+        
+        for (MultipartFile image : images) {
+            try {
+                if (!image.isEmpty()) {
+                    String contentType = image.getContentType();
+                    if (contentType == null) {
+                        contentType = "image/png";
+                    }
+                    byte[] bytes = image.getBytes();
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    String dataUrl = "data:" + contentType + ";base64," + base64;
+                    existingImages.add(dataUrl);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process image: " + image.getOriginalFilename(), e);
+            }
+        }
+        
+        ticket.setImages(existingImages);
+        Ticket saved = ticketRepository.save(ticket);
+        return TicketResponse.fromEntity(saved);
+    }
+
+    /**
+     * Delete an image from a ticket by index
+     */
+    public TicketResponse deleteImageFromTicket(String ticketId, int imageIndex) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        List<String> images = ticket.getImages();
+        if (images == null || imageIndex < 0 || imageIndex >= images.size()) {
+            throw new IllegalArgumentException("Invalid image index: " + imageIndex);
+        }
+        
+        images.remove(imageIndex);
+        ticket.setImages(images);
+        Ticket saved = ticketRepository.save(ticket);
+        return TicketResponse.fromEntity(saved);
+    }
+
+    /**
+     * Get all comments for a ticket
+     */
+    public List<CommentResponse> getCommentsForTicket(String ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        
+        return commentRepository.findByTicketIdOrderByCreatedAtAsc(ticket.getId())
+                .stream()
+                .map(CommentResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Add comment as a student (only on own tickets)
+     */
     public CommentResponse addCommentAsStudent(String ticketId, String userId, CommentCreateRequest request) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
@@ -85,12 +215,18 @@ public class TicketWorkflowService {
         return addCommentInternal(ticket, userId, request.getContent().trim());
     }
 
+    /**
+     * Add comment as a technician (any ticket)
+     */
     public CommentResponse addCommentAsTechnician(String ticketId, String userId, CommentCreateRequest request) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
         return addCommentInternal(ticket, userId, request.getContent().trim());
     }
 
+    /**
+     * Internal method to add comment and send notifications
+     */
     private CommentResponse addCommentInternal(Ticket ticket, String authorId, String content) {
         List<Comment> prior = commentRepository.findByTicketIdOrderByCreatedAtAsc(ticket.getId());
         Set<String> notifyUserIds = new LinkedHashSet<>();
@@ -126,6 +262,9 @@ public class TicketWorkflowService {
         return CommentResponse.fromEntity(saved);
     }
 
+    /**
+     * Helper to create a short summary of ticket description
+     */
     private static String summarizeDescription(String description) {
         if (description == null || description.isBlank()) {
             return "Support ticket";

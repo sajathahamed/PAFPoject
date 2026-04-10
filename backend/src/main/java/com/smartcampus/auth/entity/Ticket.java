@@ -28,7 +28,7 @@ public class Ticket {
     private String assignedId;
 
     @Field("category")
-    private TicketCategory category;
+    private String category;
 
     @Field("description")
     private String description;

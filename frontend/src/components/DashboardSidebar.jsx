@@ -27,6 +27,7 @@ export default function DashboardSidebar() {
       case 'Dashboard': return <LayoutDashboard size={20} />
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
+      case 'Solved Tickets': return <Ticket size={20} />
       case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
       case 'Notifications': return <Bell size={20} />
@@ -48,6 +49,7 @@ export default function DashboardSidebar() {
     TECHNICIAN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
+      { label: 'Solved Tickets', path: '/technician/solved', icon: 'Solved Tickets' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     ADMIN: [

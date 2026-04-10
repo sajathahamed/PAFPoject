@@ -9,6 +9,7 @@ import AdminHome from './pages/AdminHome';
 import AdminUsers from './pages/AdminUsers';
 import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
+import SolvedTickets from './pages/SolvedTickets';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
 import NotificationsPage from './pages/NotificationsPage';
@@ -130,6 +131,16 @@ function App() {
             element={
               <ProtectedRoute roles="TECHNICIAN">
                 <TechnicianDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Technician Solved Tickets */}
+          <Route
+            path="/technician/solved"
+            element={
+              <ProtectedRoute roles="TECHNICIAN">
+                <SolvedTickets />
               </ProtectedRoute>
             }
           />

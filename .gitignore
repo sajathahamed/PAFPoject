@@ -1,0 +1,54 @@
+# Root Project .gitignore - Smart Campus Operations Hub
+
+# IDE and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# Log files
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# MongoDB local data
+data/
+mongodb/
+
+# Resolved files (generated)
+*.resolved
+
+# Dependency directories (scoped in subfolders)
+# frontend/node_modules/ - handled by frontend/.gitignore
+# backend/target/ - handled by backend/.gitignore
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Secrets
+secrets/
+*.pem
+*.key

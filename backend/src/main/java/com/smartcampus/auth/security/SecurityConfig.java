@@ -66,13 +66,13 @@ public class SecurityConfig {
         // API Endpoint Authorization
         http.authorizeHttpRequests(auth -> auth
             // Public endpoints
-            .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/callback").permitAll()
+            .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/callback", "/api/auth/refresh").permitAll()
             // Google (and other) OAuth2 redirect flow — must be reachable without a session
             .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             
             // Protected endpoints
-            .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout", 
+            .requestMatchers("/api/auth/me", "/api/auth/logout", 
                 "/api/auth/profile", "/api/auth/profile-picture", "/api/auth/change-password").authenticated()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/student/**").hasRole("STUDENT")
