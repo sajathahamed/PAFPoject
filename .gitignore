@@ -1,5 +1,6 @@
 # Dependencies
 **/node_modules/
+node_modules/
 
 # Vite / React build output
 frontend/dist/
