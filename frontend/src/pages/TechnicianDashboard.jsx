@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { Wrench, Clock, CheckCircle, AlertCircle, ListChecks } from 'lucide-react'
 
 const TechnicianDashboard = () => {
   const { user } = useAuth()

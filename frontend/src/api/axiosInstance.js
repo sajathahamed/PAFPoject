@@ -73,7 +73,7 @@ axiosInstance.interceptors.response.use(
       }
 
       // Don't retry admin/user endpoints - they require higher privileges
-      if (originalRequest.url.includes('/admin/users') || originalRequest.url.includes('/admin/bookings')) {
+      if (originalRequest.url.includes('/admin/users')) {
         console.error('Admin endpoint failed with 401:', originalRequest.url);
         return Promise.reject(error);
       }

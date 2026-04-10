@@ -11,19 +11,15 @@ import StudentHome from './pages/StudentHome';
 import TechnicianDashboard from './pages/TechnicianDashboard';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+import NotificationsPage from './pages/NotificationsPage';
+=========
 import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingDetailPage from './pages/BookingDetailPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
-=======
-import NotificationsPage from './pages/NotificationsPage';
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
-import NotificationsPage from './pages/NotificationsPage';
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
 
 function roleToPath(role) {
   switch (role) {
@@ -116,8 +112,14 @@ function App() {
             }
           />
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
+=========
           <Route
             path="/admin/bookings"
             element={
@@ -159,19 +161,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <BookingDetailPage />
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-          {/* Notifications */}
-          <Route
-            path="/notifications"
-            element={
-              <ProtectedRoute>
-                <NotificationsPage />
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
               </ProtectedRoute>
             }
           />
@@ -201,17 +191,9 @@ function App() {
             path="/work-orders"
             element={
               <ProtectedRoute roles={['ADMIN', 'TECHNICIAN']}>
-                <div className="dashboard-layout">
-                  <DashboardSidebar />
-                  <div className="dashboard-content">
-                    <div className="page-header">
-                      <h1 className="page-title">Work orders</h1>
-                      <p className="page-subtitle">Maintenance work order management</p>
-                    </div>
-                    <div className="card">
-                      <p style={{ color: '#64748b' }}>Work orders management coming soon.</p>
-                    </div>
-                  </div>
+                <div className="container" style={{ paddingTop: '24px' }}>
+                  <h1>Work Orders</h1>
+                  <p>Work orders management coming soon...</p>
                 </div>
               </ProtectedRoute>
             }

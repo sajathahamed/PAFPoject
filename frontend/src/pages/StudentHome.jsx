@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { Plus, Clock, AlertCircle } from 'lucide-react'
+import { Plus, Clock, AlertCircle, CheckCircle } from 'lucide-react'
 
 const StudentHome = () => {
   const { user } = useAuth()
-  const [tickets] = useState([
+  const [tickets, setTickets] = useState([
     { id: 1, title: 'Projector not working', category: 'Equipment', status: 'OPEN', priority: 'HIGH', date: '2024-01-15' },
     { id: 2, title: 'AC maintenance request', category: 'Maintenance', status: 'IN_PROGRESS', priority: 'MEDIUM', date: '2024-01-10' },
   ])
+  const [loading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
 
   const getStatusColor = (status) => {

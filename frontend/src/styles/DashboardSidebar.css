@@ -32,15 +32,7 @@
   width: 80px;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-/* When collapsed, brand/user sections are hidden so the nav starts at the very top.
-   Add extra top padding to avoid overlapping the toggle button. */
-.dashboard-sidebar.closed .sidebar-nav {
-  padding-top: 76px;
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+<<<<<<<<< Temporary merge branch 1
 /* Top bar: bell + menu toggle */
 .sidebar-top-bar {
   display: flex;
@@ -61,10 +53,12 @@
 
 .dashboard-sidebar.closed .sidebar-top-bar .notification-bell-wrapper {
   flex: none;
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=========
+/* When collapsed, brand/user sections are hidden so the nav starts at the very top.
+   Add extra top padding to avoid overlapping the toggle button. */
+.dashboard-sidebar.closed .sidebar-nav {
+  padding-top: 76px;
+>>>>>>>>> Temporary merge branch 2
 }
 
 /* Toggle Button */

@@ -1,20 +1,17 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
+=========
 import { useState, useEffect, useCallback } from 'react';
-=======
-import { createContext, useState, useEffect, useCallback, useRef } from 'react';
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
-import { createContext, useState, useEffect, useCallback, useRef } from 'react';
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
 import authService from '../services/authService';
-import { AuthContext } from './AuthContextInstance';
 
 /**
  * Authentication context for Smart Campus Operations Hub.
  * 
  * Provides global authentication state and methods to all components.
  */
+export const AuthContext = createContext(null);
+
 /**
  * Authentication provider component.
  * 
@@ -24,7 +21,7 @@ import { AuthContext } from './AuthContextInstance';
  * - Manages loading state during auth checks
  * - Role-based access helper
  */
-export default function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   /** Full-screen loader only for the first session check — not during login/register */
   const [loading, setLoading] = useState(true);
@@ -198,4 +195,4 @@ export default function AuthProvider({ children }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};

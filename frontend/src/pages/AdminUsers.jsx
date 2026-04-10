@@ -40,6 +40,21 @@ const AdminUsers = () => {
     }
   };
 
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      setUpdating(userId);
+      setError(null);
+      const updatedUser = await authService.updateUserRole(userId, newRole);
+
+      // Update user in local state
+      setUsers(users.map(u => u.id === userId ? updatedUser : u));
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update role');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {

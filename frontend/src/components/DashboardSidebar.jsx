@@ -9,18 +9,15 @@ import {
   LogOut, 
   Menu,
   X,
-<<<<<<< HEAD
-  Settings,
-  Calendar,
-  ClipboardList
-=======
+<<<<<<<<< Temporary merge branch 1
   GraduationCap,
   Settings,
   Bell
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=========
+  Settings,
+  Calendar,
+  ClipboardList
+>>>>>>>>> Temporary merge branch 2
 } from 'lucide-react'
 import NotificationBell from './NotificationBell'
 import '../styles/DashboardSidebar.css'
@@ -36,17 +33,14 @@ export default function DashboardSidebar() {
       case 'Dashboard': return <LayoutDashboard size={20} />
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
+      case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+      case 'Notifications': return <Bell size={20} />
+=========
       case 'My Bookings': return <Calendar size={20} />
       case 'All Bookings': return <ClipboardList size={20} />
-=======
-      case 'Notifications': return <Bell size={20} />
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
-      case 'Notifications': return <Bell size={20} />
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
       default: return <User size={20} />
     }
   }
@@ -55,26 +49,20 @@ export default function DashboardSidebar() {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
-<<<<<<< HEAD
-<<<<<<< HEAD
-      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
-    ],
-    LECTURER: [
-      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
-      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+<<<<<<<<< Temporary merge branch 1
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=========
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
+    ],
+    LECTURER: [
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
+>>>>>>>>> Temporary merge branch 2
     ],
     TECHNICIAN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
@@ -83,20 +71,13 @@ export default function DashboardSidebar() {
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
-      { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
   }
 
   const menuItems = roleMenus[user?.role] || []
-
-  const isItemActive = (item) => {
-    if (item.path === '/bookings/my') {
-      return location.pathname === '/bookings/my' || /^\/bookings\/[^/]+$/.test(location.pathname)
-    }
-    return location.pathname === item.path
-  }
+  const isActive = (path) => location.pathname === path
 
   const handleLogout = () => {
     logout()
@@ -140,8 +121,8 @@ export default function DashboardSidebar() {
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <button
-            key={`${item.path}-${item.label}`}
-            className={`nav-item ${isItemActive(item) ? 'active' : ''}`}
+            key={item.path}
+            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
             onClick={() => navigate(item.path)}
             title={item.label}
           >

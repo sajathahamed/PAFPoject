@@ -14,18 +14,7 @@ function getApiErrorMessage(err) {
 function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN':
-<<<<<<< HEAD
-<<<<<<< HEAD
-      return '/dashboard';
-    case 'LECTURER':
-      return '/dashboard';
-    case 'ADMIN':
-      return '/dashboard';
-    default:
-      return '/dashboard';
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+<<<<<<<<< Temporary merge branch 1
       return '/technician/dashboard';
     case 'LECTURER':
       return '/lecturer/home';
@@ -33,23 +22,24 @@ function roleToPath(role) {
       return '/admin/home';
     default:
       return '/student/home';
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=========
+      return '/dashboard';
+    case 'LECTURER':
+      return '/dashboard';
+    case 'ADMIN':
+      return '/dashboard';
+    default:
+      return '/dashboard';
+>>>>>>>>> Temporary merge branch 2
   }
 }
 
 const LoginPage = () => {
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
+=========
   const { loginWithGoogle, login, user, loading: authLoading, isAuthenticated } = useAuth();
-=======
-  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
-  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -58,9 +48,15 @@ const LoginPage = () => {
   const [success, setSuccess] = useState('');
   const [busy, setBusy] = useState(false);
 
+  const from = location.state?.from?.pathname || '/dashboard';
+
   useEffect(() => {
-<<<<<<< HEAD
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+    if (isAuthenticated && user) {
+      navigate(roleToPath(user.role), { replace: true });
+    }
+  }, [isAuthenticated, user, navigate, from]);
+=========
     if (authLoading || busy) return;
     if (!isAuthenticated || !user) return;
     const intended = location.state?.from?.pathname;
@@ -70,17 +66,7 @@ const LoginPage = () => {
         : roleToPath(user.role);
     navigate(dest, { replace: true });
   }, [authLoading, busy, isAuthenticated, user, navigate, location.state]);
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-    if (isAuthenticated && user) {
-      navigate(roleToPath(user.role), { replace: true });
-    }
-  }, [isAuthenticated, user, navigate, from]);
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+>>>>>>>>> Temporary merge branch 2
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -110,16 +96,6 @@ const LoginPage = () => {
     setSuccess('');
     loginWithGoogle();
   };
-
-  if (authLoading) {
-    return (
-      <div className="hero-container">
-        <div className="hero-form-container">
-          <div className="spinner" />
-        </div>
-      </div>
-    );
-  }
 
   if (busy) {
     return (
@@ -238,20 +214,14 @@ const LoginPage = () => {
 
             <div className="text-center mb-4">
               <p style={{ color: 'rgba(255,255,255,0.6)' }}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                Don&apos;t have an account? <Link to="/register" className="btn-link">Register</Link>
-=======
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+<<<<<<<<< Temporary merge branch 1
                 Don&apos;t have an account?{' '}
                 <Link to="/register" className="btn-link">
                   Register
                 </Link>
-<<<<<<< HEAD
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
-=======
->>>>>>> 982656fa2029fe76d8872e217eaf98b7a86ce193
+=========
+                Don&apos;t have an account? <Link to="/register" className="btn-link">Register</Link>
+>>>>>>>>> Temporary merge branch 2
               </p>
             </div>
           </motion.div>
