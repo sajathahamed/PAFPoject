@@ -78,6 +78,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     /**
      * Create a new user with default USER role.
      */
+    @SuppressWarnings("null")
     private User createNewUser(String email, String name, String picture, 
                                String provider, String providerId) {
         log.info("Creating new user: email={}, provider={}", email, provider);

@@ -8,6 +8,7 @@ import com.smartcampus.auth.entity.RelatedEntityType;
 import com.smartcampus.auth.exception.ResourceNotFoundException;
 import com.smartcampus.auth.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +18,7 @@ public class BookingWorkflowService {
     private final BookingRepository bookingRepository;
     private final NotificationService notificationService;
 
-    public BookingResponse updateStatus(String bookingId, BookingStatus newStatus) {
+    public BookingResponse updateStatus(@NonNull String bookingId, @NonNull BookingStatus newStatus) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 

@@ -14,15 +14,6 @@ function getApiErrorMessage(err) {
 function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN':
-<<<<<<<<< Temporary merge branch 1
-      return '/technician/dashboard';
-    case 'LECTURER':
-      return '/lecturer/home';
-    case 'ADMIN':
-      return '/admin/home';
-    default:
-      return '/student/home';
-=========
       return '/dashboard';
     case 'LECTURER':
       return '/dashboard';
@@ -30,16 +21,11 @@ function roleToPath(role) {
       return '/dashboard';
     default:
       return '/dashboard';
->>>>>>>>> Temporary merge branch 2
   }
 }
 
 const LoginPage = () => {
-<<<<<<<<< Temporary merge branch 1
-  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
-=========
   const { loginWithGoogle, login, user, loading: authLoading, isAuthenticated } = useAuth();
->>>>>>>>> Temporary merge branch 2
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,15 +34,7 @@ const LoginPage = () => {
   const [success, setSuccess] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
-
   useEffect(() => {
-<<<<<<<<< Temporary merge branch 1
-    if (isAuthenticated && user) {
-      navigate(roleToPath(user.role), { replace: true });
-    }
-  }, [isAuthenticated, user, navigate, from]);
-=========
     if (authLoading || busy) return;
     if (!isAuthenticated || !user) return;
     const intended = location.state?.from?.pathname;
@@ -65,8 +43,7 @@ const LoginPage = () => {
         ? intended
         : roleToPath(user.role);
     navigate(dest, { replace: true });
-  }, [authLoading, busy, isAuthenticated, user, navigate, location.state]);
->>>>>>>>> Temporary merge branch 2
+  }, [authLoading, busy, isAuthenticated, user, navigate, location]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -214,14 +191,10 @@ const LoginPage = () => {
 
             <div className="text-center mb-4">
               <p style={{ color: 'rgba(255,255,255,0.6)' }}>
-<<<<<<<<< Temporary merge branch 1
                 Don&apos;t have an account?{' '}
                 <Link to="/register" className="btn-link">
                   Register
                 </Link>
-=========
-                Don&apos;t have an account? <Link to="/register" className="btn-link">Register</Link>
->>>>>>>>> Temporary merge branch 2
               </p>
             </div>
           </motion.div>

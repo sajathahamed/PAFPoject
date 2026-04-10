@@ -21,6 +21,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @SuppressWarnings("null")
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
@@ -36,7 +37,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .providerId("admin@smartcampus.com")
                     .build();
 
-            userRepository.save(admin);
+            User savedAdmin = userRepository.save(admin);
+            log.debug("Admin user saved with ID: {}", savedAdmin.getId());
             log.info("Default admin user created: admin@smartcampus.com / admin123");
             
             // Note: Other collections (Resources, Bookings) work the same way.

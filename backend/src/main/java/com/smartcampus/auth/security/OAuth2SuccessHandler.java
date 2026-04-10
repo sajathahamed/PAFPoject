@@ -5,7 +5,6 @@ import com.smartcampus.auth.entity.User;
 import com.smartcampus.auth.repository.RefreshTokenRepository;
 import com.smartcampus.auth.repository.UserRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +81,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     /**
      * Generate a unique refresh token and store it in the database.
      */
+    @SuppressWarnings("null")
     private String generateAndStoreRefreshToken(User user) {
         // Revoke any existing refresh tokens for this user (optional: for single-session)
         // refreshTokenRepository.revokeAllByUser(user);
