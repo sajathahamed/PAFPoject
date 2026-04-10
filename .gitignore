@@ -1,0 +1,34 @@
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
