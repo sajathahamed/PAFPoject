@@ -121,15 +121,33 @@ function App() {
             }
           />
 
-          {/* Bookings */}
+          <Route
+            path="/admin/bookings"
+            element={
+              <ProtectedRoute roles="ADMIN">
+                <AdminBookingsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
+                <Navigate to="/bookings/my" replace />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/bookings/my"
             element={
-              <ProtectedRoute roles={['STUDENT', 'LECTURER']}>
+              <ProtectedRoute roles={['STUDENT', 'LECTURER', 'ADMIN']}>
                 <MyBookingsPage />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/bookings/new"
             element={
@@ -138,20 +156,13 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/bookings/:id"
             element={
               <ProtectedRoute>
                 <BookingDetailPage />
-              </ProtectedRoute>
-            }
-          />
 
-          <Route
-            path="/admin/bookings"
-            element={
-              <ProtectedRoute roles="ADMIN">
-                <AdminBookingsPage />
               </ProtectedRoute>
             }
           />
