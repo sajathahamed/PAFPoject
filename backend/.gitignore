@@ -88,6 +88,7 @@ test_compile_out.txt
 .env.development.local
 .env.test.local
 .env.production.local
+src/main/resources/application.yml
 application-local.yml
 application-secrets.yml
 
@@ -110,3 +111,4 @@ spring-boot-devtools.properties
 # Test output
 test-output/
 surefire-reports/
+
