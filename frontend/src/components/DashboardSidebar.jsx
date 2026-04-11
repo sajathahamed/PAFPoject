@@ -12,7 +12,6 @@ import {
   Settings,
   Calendar,
   ClipboardList,
-  GraduationCap,
   Building2,
   Boxes,
   Bell
@@ -42,26 +41,26 @@ export default function DashboardSidebar() {
 
   const roleMenus = {
     STUDENT: [
-      { label: 'Dashboard', path: '/student/home', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
-      { label: 'Dashboard', path: '/lecturer/home', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     TECHNICIAN: [
-      { label: 'Dashboard', path: '/technician/dashboard', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Tickets', path: '/technician/tickets', icon: 'Tickets' },
       { label: 'Solved Tickets', path: '/technician/solved', icon: 'Solved Tickets' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     ADMIN: [
-      { label: 'Dashboard', path: '/admin/home', icon: 'Dashboard' },
+      { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Resource Management', path: '/admin/resources', icon: 'Resources' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
       { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },

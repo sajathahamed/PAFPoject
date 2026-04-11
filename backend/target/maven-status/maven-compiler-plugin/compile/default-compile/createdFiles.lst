@@ -28,6 +28,7 @@ com\smartcampus\auth\SmartCampusAuthApplication.class
 com\smartcampus\auth\entity\User.class
 com\smartcampus\auth\entity\RefreshToken.class
 com\smartcampus\auth\security\OAuth2SuccessHandler.class
+com\smartcampus\auth\controller\ResourceController.class
 com\smartcampus\auth\dto\BookingConflictCheckResponse$BookingConflictCheckResponseBuilder.class
 com\smartcampus\auth\repository\TicketRepository.class
 com\smartcampus\auth\dto\TicketStatusUpdateRequest.class

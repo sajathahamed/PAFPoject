@@ -13,11 +13,14 @@ function getApiErrorMessage(err) {
 
 function roleToPath(role) {
   switch (role) {
-    case 'ADMIN':      return '/admin/home';
-    case 'TECHNICIAN': return '/technician/dashboard';
-    case 'LECTURER':   return '/lecturer/home';
-    case 'STUDENT':    return '/student/home';
-    default:           return '/dashboard';
+    case 'TECHNICIAN':
+      return '/dashboard';
+    case 'LECTURER':
+      return '/dashboard';
+    case 'ADMIN':
+      return '/dashboard';
+    default:
+      return '/dashboard';
   }
 }
 
@@ -201,12 +204,4 @@ const LoginPage = () => {
   );
 };
 
-function LoginPageWithGoogle() {
-  return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <LoginPage />
-    </GoogleOAuthProvider>
-  );
-}
-
-export default LoginPageWithGoogle;
+export default LoginPage;
