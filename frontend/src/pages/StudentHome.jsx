@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { Plus, Clock, AlertCircle, CheckCircle } from 'lucide-react'
+import { Plus, Clock, AlertCircle, Boxes } from 'lucide-react'
 
 const StudentHome = () => {
   const { user } = useAuth()
-  const [tickets, setTickets] = useState([
+  const [tickets] = useState([
     { id: 1, title: 'Projector not working', category: 'Equipment', status: 'OPEN', priority: 'HIGH', date: '2024-01-15' },
     { id: 2, title: 'AC maintenance request', category: 'Maintenance', status: 'IN_PROGRESS', priority: 'MEDIUM', date: '2024-01-10' },
   ])
-  const [loading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
 
   const getStatusColor = (status) => {
@@ -31,7 +31,6 @@ const StudentHome = () => {
         </div>
 
         <div className="dashboard-grid">
-          {/* Quick Stats */}
           <div className="stat-mini-card">
             <div className="stat-mini-icon"><Clock size={20} /></div>
             <div className="stat-mini-content">
@@ -48,12 +47,12 @@ const StudentHome = () => {
             </div>
           </div>
 
-          <div className="stat-mini-card">
-            <div className="stat-mini-icon progress"><Clock size={20} /></div>
-            <div className="stat-mini-content">
-              <span className="stat-mini-value">{tickets.filter(t => t.status === 'IN_PROGRESS').length}</span>
-              <span className="stat-mini-label">In Progress</span>
-            </div>
+          <div className="card">
+            <h3><Boxes size={18} /> Facilities</h3>
+            <p className="mt-1">Browse halls, labs, and other campus resources</p>
+            <Link to="/resources" className="btn btn-primary mt-2">
+              View Resource Catalogue
+            </Link>
           </div>
         </div>
 
@@ -125,7 +124,7 @@ const StudentHome = () => {
               ))
             ) : (
               <div className="empty-state">
-                <p>No tickets yet. Create your first ticket to get started.</p>
+                <p>No tickets found.</p>
               </div>
             )}
           </div>

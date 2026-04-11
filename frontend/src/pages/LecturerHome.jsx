@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import DashboardSidebar from '../components/DashboardSidebar'
-import { GraduationCap, Clock, BookOpen, FileText } from 'lucide-react'
+import { GraduationCap, BookOpen, FileText, Boxes } from 'lucide-react'
 
 const LecturerHome = () => {
   const { user } = useAuth()
@@ -36,12 +37,12 @@ const LecturerHome = () => {
             </div>
           </div>
 
-          <div className="stat-mini-card">
-            <div className="stat-mini-icon"><FileText size={20} /></div>
-            <div className="stat-mini-content">
-              <span className="stat-mini-value">5</span>
-              <span className="stat-mini-label">Pending Requests</span>
-            </div>
+          <div className="card">
+            <h3><Boxes size={18} /> Facilities</h3>
+            <p className="mt-1">Browse halls and lecture-friendly resources</p>
+            <Link to="/resources" className="btn btn-primary mt-2">
+              View Resource Catalogue
+            </Link>
           </div>
         </div>
 
@@ -62,6 +63,9 @@ const LecturerHome = () => {
                 <div className="ticket-status">
                   <span className="status-badge status-resolved">
                     {cls.students} Students
+                  </span>
+                  <span className="priority-badge priority-low">
+                    <FileText size={14} /> Active
                   </span>
                 </div>
               </div>

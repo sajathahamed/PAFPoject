@@ -1,5 +1,11 @@
 package com.smartcampus.auth.entity;
 
 public enum ResourceType {
-    LABROOM, PROJECTOR, EQUIPMENT, OTHER
+    ROOM,
+    LAB,
+    HALL,
+    LABROOM,
+    PROJECTOR,
+    EQUIPMENT,
+    OTHER
 }

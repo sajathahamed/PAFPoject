@@ -7,4 +7,3 @@ export default function ConflictWarning({ visible, message }) {
     </div>
   )
 }
-

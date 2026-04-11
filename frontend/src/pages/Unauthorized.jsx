@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Unauthorized page - shown when user lacks required role.
@@ -31,3 +31,4 @@ const Unauthorized = () => {
 };
 
 export default Unauthorized;
+

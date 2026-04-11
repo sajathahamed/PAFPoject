@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import useAuth from '../hooks/useAuth'
+import { useAuth } from '../context/AuthContext'
 import DashboardSidebar from '../components/DashboardSidebar'
 import technicianService from '../services/technicianService'
 import { 
   Clock, CheckCircle, AlertCircle, XCircle, 
-  Image, Trash2, Plus, MessageSquare, ChevronDown,
+  Trash2, Plus, MessageSquare, ChevronDown,
   RefreshCw, Eye, X
 } from 'lucide-react'
 
@@ -672,110 +672,64 @@ const TechnicianDashboard = () => {
           margin-bottom: 16px;
         }
 
-        .modal-header h3 {
-          font-size: 18px;
-          font-weight: 600;
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
         }
 
-        .modal-close {
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #64748b;
-          padding: 4px;
-        }
-
-        .modal-subtitle {
-          color: #64748b;
-          margin-bottom: 16px;
+        .modal-content {
+          background: white;
+          border-radius: 12px;
+          padding: 24px;
+          width: 100%;
+          max-width: 500px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         .status-options {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: 1fr 1fr;
           gap: 12px;
+          margin-top: 16px;
         }
 
         .status-option {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 8px;
-          padding: 12px 16px;
-          border: 2px solid #e2e8f0;
+          padding: 12px;
+          border: 1px solid #e2e8f0;
           border-radius: 8px;
           background: white;
           cursor: pointer;
-          font-weight: 500;
           transition: all 0.2s;
         }
 
         .status-option:hover:not(:disabled) {
-          border-color: #1976d2;
-          background: #e3f2fd;
+          background: #f8fafc;
+          border-color: #cbd5e1;
         }
 
         .status-option.active {
-          border-color: #1976d2;
-          background: #e3f2fd;
+          background: #e2e8f0;
+          border-color: #64748b;
+          font-weight: 600;
         }
 
-        .status-option:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .form-textarea {
-          width: 100%;
-          padding: 12px;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          font-size: 14px;
-          resize: vertical;
-        }
-
-        .form-textarea:focus {
-          outline: none;
-          border-color: #1976d2;
-          box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
-        }
-
-        .file-info {
-          margin-top: 8px;
-          font-size: 13px;
-          color: #388e3c;
-        }
-
-        .loading-spinner {
+        .modal-actions {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 400px;
-          font-size: 16px;
-          color: #64748b;
-        }
-
-        @media (max-width: 768px) {
-          .dashboard-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .filter-bar {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .ticket-header {
-            flex-direction: column;
-            gap: 12px;
-          }
-
-          .ticket-badges {
-            order: -1;
-          }
-
-          .status-options {
-            grid-template-columns: 1fr;
-          }
+          justify-content: flex-end;
+          gap: 12px;
+          margin-top: 24px;
         }
       `}</style>
     </div>
