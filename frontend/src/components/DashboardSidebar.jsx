@@ -12,7 +12,9 @@ import {
   Settings,
   Calendar,
   ClipboardList,
-  Bell,
+  Building2,
+  Boxes,
+  Bell
 } from 'lucide-react'
 import '../styles/DashboardSidebar.css'
 
@@ -28,6 +30,8 @@ export default function DashboardSidebar() {
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
       case 'User Management': return <Users size={20} />
+      case 'Facilities': return <Building2 size={20} />
+      case 'Resources': return <Boxes size={20} />
       case 'Notifications': return <Bell size={20} />
       case 'My Bookings': return <Calendar size={20} />
       case 'All Bookings': return <ClipboardList size={20} />
@@ -38,12 +42,14 @@ export default function DashboardSidebar() {
   const roleMenus = {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Facilities', path: '/resources', icon: 'Facilities' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
@@ -55,6 +61,7 @@ export default function DashboardSidebar() {
     ],
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
+      { label: 'Resource Management', path: '/admin/resources', icon: 'Resources' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
       { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },

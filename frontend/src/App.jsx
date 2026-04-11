@@ -12,8 +12,10 @@ import TechnicianDashboard from './pages/TechnicianDashboard';
 import SolvedTickets from './pages/SolvedTickets';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+import ResourcesPage from './pages/ResourcesPage';
+import AdminResourcesPage from './pages/AdminResourcesPage';
+import ResourceDetailPage from './pages/ResourceDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
-import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
 import CreateBookingPage from './pages/CreateBookingPage';
 import BookingDetailPage from './pages/BookingDetailPage';
@@ -24,20 +26,11 @@ function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN': return '/dashboard';
     case 'LECTURER':   return '/dashboard';
-    case 'ADMIN':    return '/dashboard';
-    default:       return '/dashboard';
+    case 'ADMIN':      return '/dashboard';
+    default:           return '/dashboard';
   }
 }
 
-/**
- * Main App component with routing configuration.
- * 
- * Route structure:
- * - Public routes: /login, /oauth-callback
- * - Protected routes (any authenticated user): /dashboard
- * - Admin-only routes: /admin/users
- * - Fallback: redirect to dashboard
- */
 function App() {
   const { user, loading } = useAuth();
 
@@ -111,6 +104,31 @@ function App() {
             }
           />
 
+          {/* Resource Catalogue Routes */}
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute>
+                <ResourcesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources/:id"
+            element={
+              <ProtectedRoute>
+                <ResourceDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/resources"
+            element={
+              <ProtectedRoute roles="ADMIN">
+                <AdminResourcesPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Notifications */}
           <Route
@@ -197,7 +215,7 @@ function App() {
             }
           />
 
-          {/* Technician routes (placeholder) */}
+          {/* Work Orders */}
           <Route
             path="/work-orders"
             element={

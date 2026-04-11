@@ -1,14 +1,7 @@
-# Root Project .gitignore - Smart Campus Operations Hub
-
-# IDE and Editors
+# ── IDE & OS ──────────────────────────────────────────────────────────
 .idea/
+*.iml
 .vscode/
-*.swp
-*.swo
-*.sublime-workspace
-*.sublime-project
-
-# OS Files
 .DS_Store
 .DS_Store?
 ._*
@@ -18,37 +11,48 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Temporary files
+# ── Temporary files ────────────────────────────────────────────────────
 *.tmp
 *.temp
 *.bak
+*.swp
+*.swo
 *~
 
-# Log files
+# ── Log files ──────────────────────────────────────────────────────────
 *.log
 logs/
 
-# Environment files
+# ── Environment files ──────────────────────────────────────────────────
 .env
 .env.local
 .env.*.local
 
-# MongoDB local data
+# ── Backend secrets (NEVER commit these) ──────────────────────────────
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-*.properties
+!backend/src/main/resources/application.properties
+
+# ── Backend build output ───────────────────────────────────────────────
+backend/target/
+
+# ── Node modules (everywhere) ─────────────────────────────────────────
+node_modules/
+
+# ── Frontend build / deps ─────────────────────────────────────────────
+frontend/dist/
+frontend/.vite/
+
+# ── MongoDB local data ─────────────────────────────────────────────────
 data/
 mongodb/
 
-# Resolved files (generated)
-*.resolved
-
-# Dependency directories (scoped in subfolders)
-# frontend/node_modules/ - handled by frontend/.gitignore
-# backend/target/ - handled by backend/.gitignore
-
-# Docker
+# ── Docker ────────────────────────────────────────────────────────────
 .docker/
 docker-compose.override.yml
 
-# Secrets
+# ── Secrets ───────────────────────────────────────────────────────────
 secrets/
 *.pem
 *.key
+*.resolved
