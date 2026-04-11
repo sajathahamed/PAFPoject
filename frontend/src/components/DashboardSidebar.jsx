@@ -50,6 +50,7 @@ export default function DashboardSidebar() {
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'Facilities', path: '/resources', icon: 'Facilities' },
+      { label: 'My Tickets', path: '/lecturer/tickets', icon: 'My Tickets' },
       { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],

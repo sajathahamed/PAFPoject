@@ -380,11 +380,11 @@ const TechnicianDashboard = () => {
                 />
               </div>
               <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setShowCommentModal(false)}>
+                <button className="btn btn-secondary technician-submit-btn" onClick={() => setShowCommentModal(false)}>
                   Cancel
                 </button>
                 <button 
-                  className="btn btn-primary" 
+                  className="btn btn-primary technician-submit-btn" 
                   onClick={handleAddComment}
                   disabled={updating || !newComment.trim()}
                 >
@@ -419,11 +419,11 @@ const TechnicianDashboard = () => {
                 )}
               </div>
               <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setShowImageModal(false)}>
+                <button className="btn btn-secondary technician-submit-btn" onClick={() => setShowImageModal(false)}>
                   Cancel
                 </button>
                 <button 
-                  className="btn btn-primary" 
+                  className="btn btn-primary technician-submit-btn" 
                   onClick={handleAddImages}
                   disabled={updating || newImages.length === 0}
                 >
@@ -646,12 +646,19 @@ const TechnicianDashboard = () => {
         }
 
         .btn-sm {
-          padding: 6px 12px;
-          font-size: 13px;
+          padding: 5px 10px;
+          font-size: 12px;
+          line-height: 1.2;
         }
 
         .btn-sm svg {
           margin-right: 4px;
+        }
+
+        .technician-submit-btn {
+          padding: 6px 10px;
+          font-size: 12px;
+          min-height: 34px;
         }
 
         .empty-state {

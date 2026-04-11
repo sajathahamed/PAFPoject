@@ -53,7 +53,7 @@ const FILTERS = [
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
-  const { user, isTechnician, isAdmin } = useAuth();
+  const { user, isTechnician, isAdmin, isLecturer } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -94,6 +94,7 @@ const NotificationsPage = () => {
     }
     if (n.relatedEntityType === 'TICKET' && n.relatedId) {
       if (isTechnician()) navigate('/technician/tickets');
+      else if (isLecturer()) navigate('/lecturer/tickets');
       else if (!isAdmin()) navigate('/student/tickets');
       else navigate('/dashboard');
     } else if (n.relatedEntityType === 'BOOKING' && n.relatedId) {
