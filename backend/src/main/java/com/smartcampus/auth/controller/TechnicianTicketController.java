@@ -63,8 +63,8 @@ public class TechnicianTicketController {
     public ResponseEntity<TicketResponse> updateStatus(
             @PathVariable String id,
             @Valid @RequestBody TicketStatusUpdateRequest body) {
-        authService.getCurrentUser();
-        return ResponseEntity.ok(ticketWorkflowService.updateTicketStatus(id, body.getStatus()));
+        User user = authService.getCurrentUser();
+        return ResponseEntity.ok(ticketWorkflowService.updateTicketStatus(id, body.getStatus(), user.getId()));
     }
 
     /**
@@ -104,8 +104,8 @@ public class TechnicianTicketController {
     public ResponseEntity<TicketResponse> addImages(
             @PathVariable String id,
             @RequestParam("images") List<MultipartFile> images) {
-        authService.getCurrentUser();
-        return ResponseEntity.ok(ticketWorkflowService.addImagesToTicket(id, images));
+        User user = authService.getCurrentUser();
+        return ResponseEntity.ok(ticketWorkflowService.addImagesToTicket(id, images, user.getId()));
     }
 
     /**
@@ -115,7 +115,7 @@ public class TechnicianTicketController {
     public ResponseEntity<TicketResponse> deleteImage(
             @PathVariable String id,
             @PathVariable int imageIndex) {
-        authService.getCurrentUser();
-        return ResponseEntity.ok(ticketWorkflowService.deleteImageFromTicket(id, imageIndex));
+        User user = authService.getCurrentUser();
+        return ResponseEntity.ok(ticketWorkflowService.deleteImageFromTicket(id, imageIndex, user.getId()));
     }
 }
