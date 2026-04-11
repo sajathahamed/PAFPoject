@@ -3,6 +3,7 @@ C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\AuthController.java
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\BookingController.java
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\LecturerBookingController.java
+C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\LecturerTicketController.java
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\NotificationController.java
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\ResourceController.java
 C:\xampp\htdocs\PAFPoject\backend\src\main\java\com\smartcampus\auth\controller\StudentTicketController.java

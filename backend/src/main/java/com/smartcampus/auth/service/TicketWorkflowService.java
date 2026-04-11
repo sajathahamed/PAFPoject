@@ -58,6 +58,16 @@ public class TicketWorkflowService {
                 .images(new ArrayList<>())
                 .build();
         Ticket saved = ticketRepository.save(ticket);
+
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                reporterId,
+                NotificationType.SYSTEM_ALERT,
+                "Ticket created",
+                String.format("Your ticket was created successfully: \"%s\".", summary),
+                saved.getId(),
+                RelatedEntityType.TICKET);
+
         return TicketResponse.fromEntity(saved);
     }
 

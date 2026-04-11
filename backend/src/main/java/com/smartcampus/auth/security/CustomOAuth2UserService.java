@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Custom OAuth2 user service that handles user creation and updates
@@ -44,12 +45,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
+        if (email == null || email.isBlank()) {
+            throw new OAuth2AuthenticationException("OAuth2 provider did not return a valid email");
+        }
+
         log.debug("OAuth2 login attempt: provider={}, email={}", provider, email);
 
-        // Find existing user or create new one
-        User user = userRepository.findByProviderAndProviderId(provider, providerId)
-                .map(existingUser -> updateExistingUser(existingUser, name, picture))
-                .orElseGet(() -> createNewUser(email, name, picture, provider, providerId));
+        // Prefer provider+providerId, then fallback to email to avoid duplicate users.
+        Optional<User> byProvider = (providerId == null || providerId.isBlank())
+            ? Optional.empty()
+            : userRepository.findByProviderAndProviderId(provider, providerId);
+
+        User user = byProvider
+            .or(() -> userRepository.findByEmail(email))
+            .map(existingUser -> updateExistingUser(existingUser, name, picture, provider, providerId))
+            .orElseGet(() -> createNewUser(email, name, picture, provider, providerId));
 
         // Create enhanced attributes map with user entity data
         Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
@@ -67,10 +77,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     /**
      * Update existing user's profile data and last login time.
      */
-    private User updateExistingUser(User user, String name, String picture) {
+    private User updateExistingUser(User user, String name, String picture, String provider, String providerId) {
         log.info("Updating existing user: {}", user.getEmail());
         user.setName(name);
         user.setProfilePicture(picture);
+        if (provider != null && !provider.isBlank()) {
+            user.setProvider(provider);
+        }
+        if (providerId != null && !providerId.isBlank()) {
+            user.setProviderId(providerId);
+        }
         user.updateLastLogin();
         return userRepository.save(user);
     }

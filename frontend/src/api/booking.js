@@ -1,16 +1,16 @@
-import axios from './axios';
+import axiosInstance from './axiosInstance';
 
 export const bookingAPI = {
-  getAll: () => axios.get('/api/bookings'),
-  getById: (id) => axios.get(`/api/bookings/${id}`),
-  getUserBookings: (userId) => axios.get(`/api/bookings/user/${userId}`),
-  getForApproval: (assignedTo) => axios.get(`/api/bookings/approval/${assignedTo}`),
-  create: (booking) => axios.post('/api/bookings', booking),
-  update: (id, booking) => axios.put(`/api/bookings/${id}`, booking),
-  approve: (id) => axios.post(`/api/bookings/${id}/approve`),
-  reject: (id, reason) => axios.post(`/api/bookings/${id}/reject`, { reason }),
-  cancel: (id) => axios.post(`/api/bookings/${id}/cancel`),
-  delete: (id) => axios.delete(`/api/bookings/${id}`),
-  checkConflicts: (resource, startTime, endTime) =>
-    axios.get('/api/bookings/conflicts', { params: { resource, startTime, endTime } })
+  getAll: () => axiosInstance.get('/bookings/my'),
+  getById: (id) => axiosInstance.get(`/bookings/${id}`),
+  getUserBookings: () => axiosInstance.get('/bookings/my'),
+  getForApproval: () => axiosInstance.get('/admin/bookings'),
+  create: (booking) => axiosInstance.post('/bookings', booking),
+  update: () => Promise.reject(new Error('Booking update endpoint is not supported')),
+  approve: (id) => axiosInstance.put(`/bookings/${id}/approve`),
+  reject: (id, reason) => axiosInstance.put(`/bookings/${id}/reject`, { reason }),
+  cancel: (id) => axiosInstance.put(`/bookings/${id}/cancel`),
+  delete: () => Promise.reject(new Error('Booking delete endpoint is not supported')),
+  checkConflicts: (resourceId, start, end) =>
+    axiosInstance.get('/bookings/conflict', { params: { resourceId, start, end } })
 };
