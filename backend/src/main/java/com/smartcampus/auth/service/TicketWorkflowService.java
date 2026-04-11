@@ -91,7 +91,7 @@ public class TicketWorkflowService {
     /**
      * Update ticket status and notify the reporter
      */
-    public TicketResponse updateTicketStatus(String ticketId, TicketStatus newStatus) {
+    public TicketResponse updateTicketStatus(String ticketId, TicketStatus newStatus, String actorUserId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
         TicketStatus previous = ticket.getStatus();
@@ -106,6 +106,17 @@ public class TicketWorkflowService {
                     NotificationType.TICKET_STATUS_CHANGED,
                     "Ticket status updated",
                     String.format("Your ticket \"%s\" changed from %s to %s.", summary, previous, newStatus),
+                    saved.getId(),
+                    RelatedEntityType.TICKET);
+        }
+
+        if (actorUserId != null && !actorUserId.isBlank() && previous != newStatus) {
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                    actorUserId,
+                    NotificationType.TICKET_STATUS_CHANGED,
+                    "You updated a ticket",
+                    String.format("You changed \"%s\" from %s to %s.", summary, previous, newStatus),
                     saved.getId(),
                     RelatedEntityType.TICKET);
         }
@@ -135,13 +146,24 @@ public class TicketWorkflowService {
                     saved.getId(),
                     RelatedEntityType.TICKET);
         }
+
+        if (technicianId != null && !technicianId.isBlank()) {
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                    technicianId,
+                    NotificationType.TICKET_ASSIGNED,
+                    "Ticket assigned to you",
+                    String.format("You assigned yourself to ticket: \"%s\"", summary),
+                    saved.getId(),
+                    RelatedEntityType.TICKET);
+        }
         return TicketResponse.fromEntity(saved);
     }
 
     /**
      * Add images to a ticket (stored as Base64 data URLs)
      */
-    public TicketResponse addImagesToTicket(String ticketId, List<MultipartFile> images) {
+    public TicketResponse addImagesToTicket(String ticketId, List<MultipartFile> images, String actorUserId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
         
@@ -169,13 +191,24 @@ public class TicketWorkflowService {
         
         ticket.setImages(existingImages);
         Ticket saved = ticketRepository.save(ticket);
+
+        if (actorUserId != null && !actorUserId.isBlank() && images != null && !images.isEmpty()) {
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                    actorUserId,
+                    NotificationType.SYSTEM_ALERT,
+                    "Images added to ticket",
+                    String.format("You added %d image(s) to \"%s\".", images.size(), summary),
+                    saved.getId(),
+                    RelatedEntityType.TICKET);
+        }
         return TicketResponse.fromEntity(saved);
     }
 
     /**
      * Delete an image from a ticket by index
      */
-    public TicketResponse deleteImageFromTicket(String ticketId, int imageIndex) {
+    public TicketResponse deleteImageFromTicket(String ticketId, int imageIndex, String actorUserId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
         
@@ -187,6 +220,17 @@ public class TicketWorkflowService {
         images.remove(imageIndex);
         ticket.setImages(images);
         Ticket saved = ticketRepository.save(ticket);
+
+        if (actorUserId != null && !actorUserId.isBlank()) {
+            String summary = summarizeDescription(saved.getDescription());
+            notificationService.createNotification(
+                    actorUserId,
+                    NotificationType.SYSTEM_ALERT,
+                    "Image removed from ticket",
+                    String.format("You removed an image from \"%s\".", summary),
+                    saved.getId(),
+                    RelatedEntityType.TICKET);
+        }
         return TicketResponse.fromEntity(saved);
     }
 
@@ -221,7 +265,16 @@ public class TicketWorkflowService {
     public CommentResponse addCommentAsTechnician(String ticketId, String userId, CommentCreateRequest request) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-        return addCommentInternal(ticket, userId, request.getContent().trim());
+        CommentResponse response = addCommentInternal(ticket, userId, request.getContent().trim());
+        String summary = summarizeDescription(ticket.getDescription());
+        notificationService.createNotification(
+            userId,
+            NotificationType.NEW_COMMENT,
+            "Comment posted",
+            String.format("You commented on \"%s\".", summary),
+            ticket.getId(),
+            RelatedEntityType.TICKET);
+        return response;
     }
 
     /**
