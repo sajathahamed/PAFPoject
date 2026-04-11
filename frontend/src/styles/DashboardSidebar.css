@@ -54,6 +54,12 @@
   flex: none;
 }
 
+/* When collapsed, add space below the top bar */
+.dashboard-sidebar.closed .sidebar-nav {
+  padding-top: 16px;
+}
+ 
+
 /* Toggle Button */
 .sidebar-toggle {
   position: relative;

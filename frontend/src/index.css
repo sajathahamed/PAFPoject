@@ -1071,6 +1071,27 @@ a:hover {
   color: #059669;
 }
 
+/* Booking statuses */
+.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-approved {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-cancelled {
+  background: #e5e7eb;
+  color: #374151;
+}
+
 .priority-badge {
   padding: 2px 8px;
   border-radius: 4px;
@@ -1763,4 +1784,142 @@ button.notification-card {
 .notification-date {
   font-size: 12px;
   color: #999;
+}
+
+/* Booking detail page */
+.booking-detail-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.booking-empty {
+  color: #64748b;
+  padding: 8px 2px;
+}
+
+.booking-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.booking-resource-title {
+  margin: 0 0 4px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: #1a2d4a;
+}
+
+.booking-id-text {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.booking-status-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.booking-meta-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.booking-meta-card {
+  margin: 0;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.booking-meta-label {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.booking-meta-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.booking-info-section {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #fcfcfd;
+  border: 1px solid #e9eef4;
+  border-radius: 10px;
+}
+
+.booking-body-text {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.booking-actions-bar {
+  margin-top: 22px;
+  display: block;
+}
+
+.booking-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.booking-admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.booking-admin-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.booking-action-btn {
+  min-width: 140px;
+  height: 40px;
+}
+
+.booking-reject-input {
+  width: 100%;
+  min-width: 290px;
+}
+
+@media (max-width: 768px) {
+  .booking-resource-title {
+    font-size: 22px;
+  }
+
+  .booking-actions-bar,
+  .booking-actions-group,
+  .booking-admin-actions {
+    width: 100%;
+  }
+
+  .booking-admin-action-row {
+    flex-wrap: wrap;
+  }
+
+  .booking-action-back,
+  .booking-action-btn {
+    width: 100%;
+  }
+
+  .booking-reject-input {
+    min-width: 100%;
+  }
 }

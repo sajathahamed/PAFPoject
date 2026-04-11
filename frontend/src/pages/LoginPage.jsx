@@ -14,18 +14,18 @@ function getApiErrorMessage(err) {
 function roleToPath(role) {
   switch (role) {
     case 'TECHNICIAN':
-      return '/technician/dashboard';
+      return '/dashboard';
     case 'LECTURER':
-      return '/lecturer/home';
+      return '/dashboard';
     case 'ADMIN':
-      return '/admin/home';
+      return '/dashboard';
     default:
-      return '/student/home';
+      return '/dashboard';
   }
 }
 
 const LoginPage = () => {
-  const { loginWithGoogle, login, isAuthenticated, user } = useAuth();
+  const { loginWithGoogle, login, user, loading: authLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -34,13 +34,16 @@ const LoginPage = () => {
   const [success, setSuccess] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const from = location.state?.from?.pathname || '/dashboard';
-
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate(roleToPath(user.role), { replace: true });
-    }
-  }, [isAuthenticated, user, navigate, from]);
+    if (authLoading || busy) return;
+    if (!isAuthenticated || !user) return;
+    const intended = location.state?.from?.pathname;
+    const dest =
+      intended && intended !== '/login' && !intended.startsWith('/oauth-callback')
+        ? intended
+        : roleToPath(user.role);
+    navigate(dest, { replace: true });
+  }, [authLoading, busy, isAuthenticated, user, navigate, location]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

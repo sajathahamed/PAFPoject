@@ -45,6 +45,7 @@ export default function NotificationBell({ compact = false }) {
   const [items, setItems] = useState([]);
   const [loadingPanel, setLoadingPanel] = useState(false);
   const wrapRef = useRef(null);
+  const isAdminUser = isAdmin();
 
   const refreshUnread = useCallback(async () => {
     try {
@@ -58,8 +59,8 @@ export default function NotificationBell({ compact = false }) {
   const loadRecent = useCallback(async () => {
     setLoadingPanel(true);
     try {
-      const all = await notificationService.getNotifications({});
-      setItems(Array.isArray(all) ? all.slice(0, PANEL_LIMIT) : []);
+      const unread = await notificationService.getNotifications({ isRead: false });
+      setItems(Array.isArray(unread) ? unread.slice(0, PANEL_LIMIT) : []);
     } catch {
       setItems([]);
     } finally {
@@ -103,13 +104,8 @@ export default function NotificationBell({ compact = false }) {
     }
     refreshUnread();
     setOpen(false);
-    if (n.relatedEntityType === 'TICKET' && n.relatedId) {
-      if (isTechnician()) navigate('/technician/tickets');
-      else if (!isAdmin()) navigate('/student/tickets');
-      else navigate('/dashboard');
-    } else if (n.relatedEntityType === 'BOOKING' && n.relatedId) {
-      navigate('/bookings');
-    }
+    if (isAdminUser) navigate('/admin/bookings');
+    else navigate('/notifications');
   };
 
   const buttonClass = `nav-item notification-bell ${compact ? 'notification-bell--compact' : ''}`;
@@ -145,15 +141,21 @@ export default function NotificationBell({ compact = false }) {
         <div className="notification-dropdown" onClick={(e) => e.stopPropagation()}>
           <div className="notification-header">
             <span>Notifications</span>
-            <Link to="/notifications" onClick={() => setOpen(false)}>
-              View all
-            </Link>
+            {isAdminUser ? (
+              <Link to="/admin/bookings" onClick={() => setOpen(false)}>
+                View all
+              </Link>
+            ) : (
+              <Link to="/notifications" onClick={() => setOpen(false)}>
+                View all
+              </Link>
+            )}
           </div>
           <div className="notification-list">
             {loadingPanel ? (
               <div className="notification-empty">Loading…</div>
             ) : items.length === 0 ? (
-              <div className="notification-empty">No notifications yet</div>
+              <div className="notification-empty">No new notifications</div>
             ) : (
               items.map((n) => (
                 <button

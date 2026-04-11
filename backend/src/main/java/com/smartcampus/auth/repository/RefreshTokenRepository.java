@@ -3,7 +3,6 @@ package com.smartcampus.auth.repository;
 import com.smartcampus.auth.entity.RefreshToken;
 import com.smartcampus.auth.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

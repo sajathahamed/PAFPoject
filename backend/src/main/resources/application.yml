@@ -11,7 +11,7 @@ spring:
   # =============================================================================
   data:
     mongodb:
-      uri: mongodb+srv://PAFProject:QBAukqu7HOnrcwiI@pafproject.wkxkdsh.mongodb.net/smartcampus
+      uri: ${MONGODB_URI:mongodb+srv://PAFProject:QBAukqu7HOnrcwiI@pafproject.wkxkdsh.mongodb.net/smartcampus}
  
  # =============================================================================
   # OAuth2 Configuration (Google)
@@ -49,10 +49,10 @@ jwt:
 # =============================================================================
 app:
   cors:
-    allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:5174
+    allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175
   oauth2:
     # URL to redirect to after successful OAuth2 authentication
-    redirect-uri: http://localhost:5174/oauth-callback
+    redirect-uri: ${APP_OAUTH2_REDIRECT_URI:http://localhost:5174/oauth-callback}
 
 # =============================================================================
 # Server Configuration
