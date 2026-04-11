@@ -195,6 +195,16 @@ function App() {
             }
           />
 
+          {/* Lecturer Tickets */}
+          <Route
+            path="/lecturer/tickets"
+            element={
+              <ProtectedRoute roles="LECTURER">
+                <StudentHome />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Technician Tickets */}
           <Route
             path="/technician/tickets"

@@ -36,7 +36,7 @@ const authService = {
    * Register a new user with email and password.
    */
   register: async (email, password, name) => {
-    const response = await axiosInstance.post('/auth/signup', { email, password, name });
+    const response = await axiosInstance.post('/auth/register', { email, password, name });
     return response.data;
   },
 
