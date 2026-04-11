@@ -9,11 +9,11 @@ import {
   LogOut, 
   Menu,
   X,
-  GraduationCap,
   Settings,
-  Bell
+  Calendar,
+  ClipboardList,
+  Bell,
 } from 'lucide-react'
-import NotificationBell from './NotificationBell'
 import '../styles/DashboardSidebar.css'
 
 export default function DashboardSidebar() {
@@ -27,10 +27,10 @@ export default function DashboardSidebar() {
       case 'Dashboard': return <LayoutDashboard size={20} />
       case 'My Tickets': return <Ticket size={20} />
       case 'Tickets': return <Ticket size={20} />
-      case 'Solved Tickets': return <Ticket size={20} />
-      case 'My Classes': return <GraduationCap size={20} />
       case 'User Management': return <Users size={20} />
       case 'Notifications': return <Bell size={20} />
+      case 'My Bookings': return <Calendar size={20} />
+      case 'All Bookings': return <ClipboardList size={20} />
       default: return <User size={20} />
     }
   }
@@ -39,11 +39,12 @@ export default function DashboardSidebar() {
     STUDENT: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'My Tickets', path: '/student/tickets', icon: 'My Tickets' },
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     LECTURER: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
-      { label: 'My Classes', path: '/lecturer/classes', icon: 'My Classes' },
+      { label: 'My Bookings', path: '/bookings/my', icon: 'My Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
     TECHNICIAN: [
@@ -55,6 +56,7 @@ export default function DashboardSidebar() {
     ADMIN: [
       { label: 'Dashboard', path: '/dashboard', icon: 'Dashboard' },
       { label: 'User Management', path: '/admin/users', icon: 'User Management' },
+      { label: 'All Bookings', path: '/admin/bookings', icon: 'All Bookings' },
       { label: 'Notifications', path: '/notifications', icon: 'Notifications' },
     ],
   }
@@ -70,7 +72,6 @@ export default function DashboardSidebar() {
   return (
     <div className={`dashboard-sidebar ${isOpen ? 'open' : 'closed'}`}>
       <div className="sidebar-top-bar">
-        <NotificationBell compact={!isOpen} />
         <button type="button" className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>

@@ -10,7 +10,7 @@ public class TicketCreateRequest {
     private String description;
 
     @NotBlank
-    private String category;
+    private String category1;
 
     private TicketPriority priority;
 }

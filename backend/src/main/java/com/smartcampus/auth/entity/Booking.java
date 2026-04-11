@@ -43,6 +43,21 @@ public class Booking {
     @Field("purpose")
     private String purpose;
 
+    @Field("rejection_reason")
+    private String rejectionReason;
+
+    @Field("decision_by")
+    private String decisionBy;
+
+    @Field("approved_at")
+    private LocalDateTime approvedAt;
+
+    @Field("rejected_at")
+    private LocalDateTime rejectedAt;
+
+    @Field("cancelled_at")
+    private LocalDateTime cancelledAt;
+
     @CreatedDate
     @Field("created_at")
     private LocalDateTime createdAt;

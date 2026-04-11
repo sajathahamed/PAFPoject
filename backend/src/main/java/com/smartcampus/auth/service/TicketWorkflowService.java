@@ -51,7 +51,7 @@ public class TicketWorkflowService {
         TicketPriority priority = request.getPriority() != null ? request.getPriority() : TicketPriority.MEDIUM;
         Ticket ticket = Ticket.builder()
                 .reporterId(reporterId)
-                .category(request.getCategory())
+                .category(request.getCategory1())
                 .description(request.getDescription().trim())
                 .priority(priority)
                 .status(TicketStatus.OPEN)
