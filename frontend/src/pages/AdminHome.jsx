@@ -1,16 +1,16 @@
-import { Link } from 'react-router-dom'
-import useAuth from '../hooks/useAuth'
-import DashboardSidebar from '../components/DashboardSidebar'
-import { Users, Settings, BarChart3, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { Link } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
+import DashboardSidebar from '../components/DashboardSidebar';
+import { Users, Settings, BarChart3, CheckCircle, AlertCircle, Boxes } from 'lucide-react';
 
 const AdminHome = () => {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const stats = [
     { label: 'Total Users', value: '156', icon: <Users size={20} /> },
     { label: 'Active Tickets', value: '23', icon: <AlertCircle size={20} /> },
     { label: 'Resolved', value: '89', icon: <CheckCircle size={20} /> },
-  ]
+  ];
 
   return (
     <div className="dashboard-layout">
@@ -43,6 +43,14 @@ const AdminHome = () => {
           </div>
 
           <div className="card">
+            <h3><Boxes size={18} /> Resource Management</h3>
+            <p className="mt-1">Manage campus facilities and halls</p>
+            <Link to="/admin/resources" className="btn btn-primary mt-2">
+              Manage Resources
+            </Link>
+          </div>
+
+          <div className="card">
             <h3><Settings size={18} /> System Settings</h3>
             <p className="mt-1">Configure system parameters</p>
             <button className="btn btn-secondary mt-2">
@@ -60,7 +68,8 @@ const AdminHome = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminHome
+export default AdminHome;
+

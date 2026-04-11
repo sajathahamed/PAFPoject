@@ -12,6 +12,9 @@ import TechnicianDashboard from './pages/TechnicianDashboard';
 import SolvedTickets from './pages/SolvedTickets';
 import LecturerHome from './pages/LecturerHome';
 import Unauthorized from './pages/Unauthorized';
+import ResourcesPage from './pages/ResourcesPage';
+import AdminResourcesPage from './pages/AdminResourcesPage';
+import ResourceDetailPage from './pages/ResourceDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
 import DashboardSidebar from './components/DashboardSidebar';
 import MyBookingsPage from './pages/MyBookingsPage';
@@ -22,22 +25,14 @@ import AdminBookingsPage from './pages/AdminBookingsPage';
 
 function roleToPath(role) {
   switch (role) {
-    case 'TECHNICIAN': return '/dashboard';
-    case 'LECTURER':   return '/dashboard';
-    case 'ADMIN':    return '/dashboard';
+    case 'TECHNICIAN': return '/technician/dashboard';
+    case 'LECTURER':   return '/lecturer/home';
+    case 'ADMIN':    return '/admin/home';
+    case 'STUDENT':    return '/student/home';
     default:       return '/dashboard';
   }
 }
 
-/**
- * Main App component with routing configuration.
- * 
- * Route structure:
- * - Public routes: /login, /oauth-callback
- * - Protected routes (any authenticated user): /dashboard
- * - Admin-only routes: /admin/users
- * - Fallback: redirect to dashboard
- */
 function App() {
   const { user, loading } = useAuth();
 
@@ -110,7 +105,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
 
           {/* Notifications */}
           <Route
@@ -197,7 +191,7 @@ function App() {
             }
           />
 
-          {/* Technician routes (placeholder) */}
+          {/* Work Orders */}
           <Route
             path="/work-orders"
             element={

@@ -9,30 +9,6 @@ import useAuth from '../hooks/useAuth';
  * - Checks role-based access if roles provided
  * - Shows loading spinner during auth check
  * - Preserves intended destination for redirect after login
- * 
- * @param {Object} props
- * @param {React.ReactNode} props.children - Component to render if authorized
- * @param {string|string[]} [props.roles] - Required role(s) to access this route
- * @param {string} [props.redirectTo='/login'] - Where to redirect if not authenticated
- * @param {string} [props.unauthorizedTo='/unauthorized'] - Where to redirect if not authorized
- * 
- * @example
- * // Protected route - any authenticated user
- * <ProtectedRoute>
- *   <Dashboard />
- * </ProtectedRoute>
- * 
- * @example
- * // Admin-only route
- * <ProtectedRoute roles="ADMIN">
- *   <AdminPanel />
- * </ProtectedRoute>
- * 
- * @example
- * // Multiple roles allowed
- * <ProtectedRoute roles={['ADMIN', 'TECHNICIAN']}>
- *   <WorkOrders />
- * </ProtectedRoute>
  */
 const ProtectedRoute = ({
   children,
@@ -68,3 +44,4 @@ const ProtectedRoute = ({
 };
 
 export default ProtectedRoute;
+
