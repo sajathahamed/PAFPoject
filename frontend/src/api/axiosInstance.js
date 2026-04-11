@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').trim();
-
 /**
  * Axios instance configured for Smart Campus API.
  * 
@@ -12,7 +10,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').trim();
  * - Request/response error handling
  */
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api',
   timeout: 10000,
   withCredentials: true, // Send cookies with every request
   headers: {
