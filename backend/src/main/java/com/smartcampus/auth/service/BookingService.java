@@ -227,6 +227,9 @@ public class BookingService {
         if (!end.isAfter(start)) {
             throw new IllegalArgumentException("End time must be after start time");
         }
+        if (start.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Booking start time must be in the future");
+        }
     }
 
     private void notifyStatus(Booking booking, BookingStatus status, String message) {

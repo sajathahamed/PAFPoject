@@ -91,6 +91,19 @@ const TechnicianDashboard = () => {
   // Update ticket status
   const handleStatusUpdate = async (newStatus) => {
     if (!selectedTicket) return
+    if (newStatus === selectedTicket.status) return
+    // Prevent invalid status transitions
+    const validTransitions = {
+      OPEN: ['IN_PROGRESS', 'CLOSED'],
+      IN_PROGRESS: ['RESOLVED', 'OPEN', 'CLOSED'],
+      RESOLVED: ['CLOSED', 'OPEN'],
+      CLOSED: [],
+    }
+    const allowed = validTransitions[selectedTicket.status] || []
+    if (!allowed.includes(newStatus)) {
+      alert(`Cannot change status from ${selectedTicket.status.replace('_', ' ')} to ${newStatus.replace('_', ' ')}`)
+      return
+    }
     try {
       setUpdating(true)
       const updated = await technicianService.updateTicketStatus(selectedTicket.id, newStatus)
@@ -107,7 +120,15 @@ const TechnicianDashboard = () => {
 
   // Add comment
   const handleAddComment = async () => {
-    if (!selectedTicket || !newComment.trim()) return
+    if (!selectedTicket) return
+    if (!newComment.trim()) {
+      alert('Comment cannot be empty.')
+      return
+    }
+    if (newComment.trim().length < 3) {
+      alert('Comment must be at least 3 characters.')
+      return
+    }
     try {
       setUpdating(true)
       await technicianService.addComment(selectedTicket.id, newComment.trim())
@@ -141,10 +162,16 @@ const TechnicianDashboard = () => {
     }
   }
 
+  // Track which images are currently being deleted to prevent double-delete
+  const [deletingImages, setDeletingImages] = useState(new Set())
+
   // Delete image
   const handleDeleteImage = async (ticketId, imageIndex) => {
+    const deleteKey = `${ticketId}-${imageIndex}`
+    if (deletingImages.has(deleteKey)) return // already deleting this image
     if (!confirm('Are you sure you want to delete this image?')) return
     try {
+      setDeletingImages(prev => new Set(prev).add(deleteKey))
       setUpdating(true)
       const updated = await technicianService.deleteImage(ticketId, imageIndex)
       setTickets(prev => prev.map(t => t.id === updated.id ? updated : t))
@@ -152,6 +179,7 @@ const TechnicianDashboard = () => {
       console.error('Error deleting image:', err)
       alert('Failed to delete image. Please try again.')
     } finally {
+      setDeletingImages(prev => { const s = new Set(prev); s.delete(deleteKey); return s })
       setUpdating(false)
     }
   }
@@ -159,6 +187,36 @@ const TechnicianDashboard = () => {
   // Handle image file selection
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files)
+    const maxSize = 5 * 1024 * 1024 // 5MB per image
+    const maxCount = 3
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
+    if (files.length > maxCount) {
+      alert(`You can upload up to ${maxCount} images at a time.`)
+      e.target.value = ''
+      return
+    }
+    // Check for duplicate files (same name + size)
+    const seen = new Set()
+    for (const file of files) {
+      const fileKey = `${file.name}-${file.size}`
+      if (seen.has(fileKey)) {
+        alert(`Duplicate image detected: ${file.name}. Please remove duplicates.`)
+        e.target.value = ''
+        return
+      }
+      seen.add(fileKey)
+      if (!allowedTypes.includes(file.type)) {
+        alert(`${file.name} is not a supported image format. Use JPEG, PNG, GIF, or WebP.`)
+        e.target.value = ''
+        return
+      }
+      if (file.size > maxSize) {
+        alert(`${file.name} exceeds the 5MB size limit.`)
+        e.target.value = ''
+        return
+      }
+    }
     setNewImages(files)
   }
 

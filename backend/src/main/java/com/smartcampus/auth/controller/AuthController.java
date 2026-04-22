@@ -173,7 +173,7 @@ public class AuthController {
      * @param response HTTP response for clearing cookies
      * @return Success message
      */
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<MessageResponse> logout(
             HttpServletRequest request,
             HttpServletResponse response) {

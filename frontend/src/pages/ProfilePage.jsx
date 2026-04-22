@@ -31,6 +31,24 @@ const ProfilePage = () => {
   }
 
   const handleSave = async () => {
+    if (!form.name.trim()) {
+      setAlert({ type: 'error', message: 'Name is required' })
+      return
+    }
+    if (form.name.trim().length < 2) {
+      setAlert({ type: 'error', message: 'Name must be at least 2 characters' })
+      return
+    }
+    if (!form.email.trim()) {
+      setAlert({ type: 'error', message: 'Email is required' })
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(form.email.trim())) {
+      setAlert({ type: 'error', message: 'Please enter a valid email address' })
+      return
+    }
+
     setLoading(true)
     setAlert({ type: '', message: '' })
     

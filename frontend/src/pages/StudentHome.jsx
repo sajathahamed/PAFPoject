@@ -49,8 +49,25 @@ const StudentHome = () => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault()
-    if (!form.description.trim()) {
+    const desc = form.description.trim()
+    if (!desc) {
       setFormError('Description is required')
+      return
+    }
+    if (desc.length < 10) {
+      setFormError('Description must be at least 10 characters')
+      return
+    }
+    if (desc.length > 1000) {
+      setFormError('Description cannot exceed 1000 characters')
+      return
+    }
+    if (!form.category1) {
+      setFormError('Please select a category')
+      return
+    }
+    if (!form.priority) {
+      setFormError('Please select a priority')
       return
     }
 

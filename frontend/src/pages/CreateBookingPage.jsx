@@ -110,6 +110,8 @@ export default function CreateBookingPage() {
     }
   }, [canCheck, form.resourceId, start, end])
 
+  const todayISO = new Date().toISOString().split('T')[0]
+
   const onChange = (e) => {
     const { name, value, type, checked } = e.target
     setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
@@ -119,6 +121,34 @@ export default function CreateBookingPage() {
   const onSubmit = async (e) => {
     e.preventDefault()
     setAlert({ type: '', message: '' })
+
+    // ── Date & time validation ──────────────────────────────
+    const now = new Date()
+    const todayStr = now.toISOString().split('T')[0]
+
+    if (!form.recurring) {
+      if (!form.date || !form.startTime || !form.endTime) {
+        setAlert({ type: 'error', message: 'Please fill in date, start time and end time.' })
+        return
+      }
+      if (form.date < todayStr) {
+        setAlert({ type: 'error', message: 'Booking date must be today or in the future.' })
+        return
+      }
+      if (form.endTime <= form.startTime) {
+        setAlert({ type: 'error', message: 'End time must be after start time.' })
+        return
+      }
+      const bookingStart = new Date(`${form.date}T${form.startTime}`)
+      if (bookingStart < now) {
+        setAlert({ type: 'error', message: 'Booking start time must be in the future.' })
+        return
+      }
+      if (!form.resourceId) {
+        setAlert({ type: 'error', message: 'Please select a resource.' })
+        return
+      }
+    }
 
     if (conflict) {
       setAlert({ type: 'error', message: 'This time slot conflicts with an existing booking.' })
@@ -130,10 +160,32 @@ export default function CreateBookingPage() {
       if (isLecturer && form.recurring) {
         if (!form.recurringStartDate || !form.recurringEndDate || !form.recurringStartTime || !form.recurringEndTime) {
           setAlert({ type: 'error', message: 'Please select recurring start/end dates and times.' })
+          setSubmitting(false)
+          return
+        }
+        if (form.recurringStartDate < todayStr) {
+          setAlert({ type: 'error', message: 'Recurring start date must be today or in the future.' })
+          setSubmitting(false)
+          return
+        }
+        if (form.recurringEndDate <= form.recurringStartDate) {
+          setAlert({ type: 'error', message: 'Recurring end date must be after start date.' })
+          setSubmitting(false)
+          return
+        }
+        if (form.recurringEndTime <= form.recurringStartTime) {
+          setAlert({ type: 'error', message: 'Recurring end time must be after start time.' })
+          setSubmitting(false)
           return
         }
         if ((form.recurringDays || []).length === 0) {
           setAlert({ type: 'error', message: 'Please select at least one day for recurring bookings.' })
+          setSubmitting(false)
+          return
+        }
+        if (!form.resourceId) {
+          setAlert({ type: 'error', message: 'Please select a resource.' })
+          setSubmitting(false)
           return
         }
         const payload = {
@@ -206,7 +258,7 @@ export default function CreateBookingPage() {
 
               <div className="form-group">
                 <label className="form-label">Date</label>
-                <input className="form-input" type="date" name="date" value={form.date} onChange={onChange} required />
+                <input className="form-input" type="date" name="date" value={form.date} onChange={onChange} required min={todayISO} />
               </div>
 
               <div className="form-group">
@@ -290,11 +342,11 @@ export default function CreateBookingPage() {
                     <div className="form-grid">
                       <div className="form-group">
                         <label className="form-label">Start date</label>
-                        <input className="form-input" type="date" name="recurringStartDate" value={form.recurringStartDate} onChange={onChange} />
+                        <input className="form-input" type="date" name="recurringStartDate" value={form.recurringStartDate} onChange={onChange} min={todayISO} />
                       </div>
                       <div className="form-group">
                         <label className="form-label">End date</label>
-                        <input className="form-input" type="date" name="recurringEndDate" value={form.recurringEndDate} onChange={onChange} />
+                        <input className="form-input" type="date" name="recurringEndDate" value={form.recurringEndDate} onChange={onChange} min={form.recurringStartDate || todayISO} />
                       </div>
                       <div className="form-group">
                         <label className="form-label">Recurring start time</label>

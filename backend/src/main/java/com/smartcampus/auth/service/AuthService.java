@@ -52,12 +52,13 @@ public class AuthService {
      */
     @Transactional
     public User register(RegisterRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(normalizedEmail)
                 .name(request.getName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .provider("LOCAL")
@@ -74,7 +75,8 @@ public class AuthService {
      */
     @Transactional
     public TokenResponse login(LoginRequest request, HttpServletResponse response) {
-        User user = userRepository.findByEmail(request.getEmail())
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new InvalidTokenException("Invalid email or password"));
 
         if (user.getPassword() == null) {
@@ -214,7 +216,7 @@ public class AuthService {
             user.setName(name);
         }
         if (email != null && !email.isBlank()) {
-            user.setEmail(email);
+            user.setEmail(email.trim().toLowerCase());
         }
         log.info("Profile updated for user: {}", user.getEmail());
         return userRepository.save(user);
