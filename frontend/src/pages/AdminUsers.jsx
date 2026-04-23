@@ -57,6 +57,28 @@ const AdminUsers = () => {
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
+    // Validate fields
+    if (!newUserData.name.trim()) {
+      setError('Name is required');
+      return;
+    }
+    if (newUserData.name.trim().length < 2) {
+      setError('Name must be at least 2 characters');
+      return;
+    }
+    if (!newUserData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newUserData.email.trim())) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!newUserData.password || newUserData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
     try {
       setIsCreating(true);
       setError(null);
@@ -87,6 +109,24 @@ const AdminUsers = () => {
 
   const handleEditSave = async (e) => {
     e.preventDefault();
+    // Validate fields
+    if (!editUserData.name.trim()) {
+      setError('Name is required');
+      return;
+    }
+    if (editUserData.name.trim().length < 2) {
+      setError('Name must be at least 2 characters');
+      return;
+    }
+    if (!editUserData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editUserData.email.trim())) {
+      setError('Please enter a valid email address');
+      return;
+    }
     try {
       setIsEditing(true);
       setError(null);

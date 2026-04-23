@@ -53,9 +53,17 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    if (!form.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    if (!form.password) {
+      setError('Password is required');
+      return;
+    }
     setBusy(true);
     try {
-      const loggedIn = await login(form.email, form.password);
+      const loggedIn = await login(form.email.trim().toLowerCase(), form.password);
       setSuccess('Signed in successfully. Redirecting…');
       setBusy(false);
       setTimeout(() => {

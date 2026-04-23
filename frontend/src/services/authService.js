@@ -57,7 +57,7 @@ const authService = {
    * @returns {Promise<Object>} Logout confirmation message
    */
   logout: async () => {
-    const response = await axiosInstance.delete('/auth/logout');
+    const response = await axiosInstance.post('/auth/logout');
     return response.data;
   },
 
