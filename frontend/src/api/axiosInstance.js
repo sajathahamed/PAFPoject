@@ -21,6 +21,7 @@ const axiosInstance = axios.create({
 // Flag to prevent multiple redirects during retry
 let isRefreshing = false;
 let failedQueue = [];
+let lastMutationRefreshAt = 0;
 
 /**
  * Process queued requests after token refresh.
@@ -50,8 +51,35 @@ function isAuthCredentialEndpoint(url) {
   return /auth\/(login|register)/.test(url);
 }
 
+function shouldRefreshAfterSuccess(response) {
+  const method = response?.config?.method?.toLowerCase();
+  const url = response?.config?.url || '';
+  const skipAutoRefresh = response?.config?.skipAutoRefresh === true;
+
+  if (skipAutoRefresh) return false;
+  if (!['post', 'put', 'patch', 'delete'].includes(method)) return false;
+  if (/\/auth\/(login|register|refresh)/.test(url)) return false;
+
+  return true;
+}
+
+function refreshPageAfterMutation() {
+  const now = Date.now();
+  // Prevent multiple immediate reloads when one action triggers chained requests.
+  if (now - lastMutationRefreshAt < 1200) return;
+  lastMutationRefreshAt = now;
+  setTimeout(() => {
+    window.location.reload();
+  }, 80);
+}
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (shouldRefreshAfterSuccess(response)) {
+      refreshPageAfterMutation();
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 

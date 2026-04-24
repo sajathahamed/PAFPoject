@@ -1,5 +1,7 @@
 package com.smartcampus.auth.security;
 
+import com.smartcampus.auth.entity.User;
+import com.smartcampus.auth.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,9 +23,11 @@ import java.util.Collections;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    public JwtAuthFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthFilter(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -49,6 +53,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 log.debug("JWT valid - userId: {}, email: {}, role: {}", userId, email, role);
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    User user = userRepository.findByEmail(email).orElse(null);
+                    if (user == null || !Boolean.TRUE.equals(user.getActive())) {
+                        log.warn("Skipping authentication for deactivated or missing user: {}", email);
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+
                     // Simple authentication with role
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(

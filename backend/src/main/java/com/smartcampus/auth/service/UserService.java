@@ -147,18 +147,20 @@ public class UserService {
     }
 
     /**
-     * Delete a user (Admin only).
-     * 
-     * @param userId the user ID to delete
+     * Activate or deactivate a user account (Admin-only).
+     *
+     * @param userId the user ID
+     * @param active true to activate, false to deactivate
+     * @return updated user
      */
     @Transactional
-    public void deleteUser(String userId) {
-        log.info("Attempting to delete user: {}", userId);
+    public User setUserActive(@NonNull String userId, boolean active) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        
-        log.info("Found user to delete: {}", user.getEmail());
-        userRepository.delete(user);
-        log.info("User deleted successfully: {}", user.getEmail());
+
+        user.setActive(active);
+        User savedUser = userRepository.save(user);
+        log.info("User {} account status changed to {}", savedUser.getEmail(), active ? "ACTIVE" : "DEACTIVATED");
+        return savedUser;
     }
 }

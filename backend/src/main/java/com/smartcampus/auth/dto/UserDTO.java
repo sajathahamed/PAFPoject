@@ -26,6 +26,7 @@ public class UserDTO {
     private String profilePicture;
     private String provider;
     private Role role;
+    private Boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
 
@@ -43,6 +44,7 @@ public class UserDTO {
                 .profilePicture(user.getProfilePicture())
                 .provider(user.getProvider())
                 .role(user.getRole())
+                .active(user.getActive())
                 .createdAt(user.getCreatedAt())
                 .lastLoginAt(user.getLastLoginAt())
                 .build();

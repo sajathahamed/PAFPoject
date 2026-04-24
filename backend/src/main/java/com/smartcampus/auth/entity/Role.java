@@ -12,5 +12,6 @@ public enum Role {
     STUDENT,
     LECTURER,
     TECHNICIAN,
-    ADMIN
+    ADMIN,
+    SUPERADMIN
 }

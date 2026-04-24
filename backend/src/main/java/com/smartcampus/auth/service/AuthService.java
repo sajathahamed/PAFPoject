@@ -79,6 +79,10 @@ public class AuthService {
         User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new InvalidTokenException("Invalid email or password"));
 
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new InvalidTokenException("This account is deactivated. Contact an administrator.");
+        }
+
         if (user.getPassword() == null) {
             throw new InvalidTokenException(
                     "This account signs in with Google. Use \"Continue with Google\" below.");
@@ -131,6 +135,9 @@ public class AuthService {
             User user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
                 log.warn("User not found in database for email: {}", email);
+            } else if (!Boolean.TRUE.equals(user.getActive())) {
+                log.warn("User account is deactivated for email: {}", email);
+                return null;
             } else {
                 log.debug("User found: {}", user.getEmail());
             }
@@ -161,6 +168,11 @@ public class AuthService {
         }
 
         User user = storedToken.getUser();
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            storedToken.revoke();
+            refreshTokenRepository.save(storedToken);
+            throw new InvalidTokenException("This account is deactivated. Contact an administrator.");
+        }
 
         // Revoke the used refresh token (token rotation)
         storedToken.revoke();

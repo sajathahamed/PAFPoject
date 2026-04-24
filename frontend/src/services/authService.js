@@ -109,14 +109,25 @@ const authService = {
   },
 
   /**
-   * Delete a user (Admin only).
-   * 
-   * @param {number} userId - The user ID to delete
-   * @returns {Promise<Object>} Deletion confirmation
+   * Activate or deactivate a user account (Admin/SuperAdmin only).
+   *
+   * @param {number|string} userId - The user ID to update
+   * @param {boolean} active - New active status
+   * @returns {Promise<Object>} Updated user data
    */
-  deleteUser: async (userId) => {
-    const response = await axiosInstance.delete(`/admin/users/${userId}`);
+  setUserActive: async (userId, active) => {
+    const response = await axiosInstance.patch(`/admin/users/${userId}/status`, null, {
+      params: { active },
+    });
     return response.data;
+  },
+
+  deactivateUser: async (userId) => {
+    return authService.setUserActive(userId, false);
+  },
+
+  activateUser: async (userId) => {
+    return authService.setUserActive(userId, true);
   },
 
   /**

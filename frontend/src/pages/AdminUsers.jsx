@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import authService from '../services/authService';
 import DashboardSidebar from '../components/DashboardSidebar';
-import { Trash2, Edit2 } from 'lucide-react';
+import useAuth from '../hooks/useAuth';
+import { Edit2, UserCheck, UserX } from 'lucide-react';
 
 /**
  * Admin page for managing users and their roles.
  */
 const AdminUsers = () => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -145,24 +147,24 @@ const AdminUsers = () => {
     }
   };
 
-  const handleDelete = async (userId) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+  const handleUserStatusChange = async (userId, nextActive) => {
+    const action = nextActive ? 'activate' : 'deactivate';
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) return;
+
     try {
       setUpdating(userId);
       setError(null);
-      console.log('Deleting user:', userId);
-      await authService.deleteUser(userId);
-      console.log('Delete successful');
-      await fetchUsers();
+      await authService.setUserActive(userId, nextActive);
       await fetchUsers();
     } catch (err) {
-      console.error('Delete error:', err);
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to delete user';
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || `Failed to ${action} user`;
       setError(errorMsg);
     } finally {
       setUpdating(null);
     }
   };
+
+  const canManageActivation = ['ADMIN', 'SUPERADMIN'].includes(currentUser?.role);
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -307,8 +309,8 @@ const AdminUsers = () => {
                   type="email"
                   className="form-input"
                   value={editUserData.email}
-                  onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
-                  required
+                  readOnly
+                  disabled
                 />
               </div>
               <div className="form-group mb-2">
@@ -354,6 +356,7 @@ const AdminUsers = () => {
               <th>User</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Status</th>
               <th>Provider</th>
               <th>Last Login</th>
               <th>Actions</th>
@@ -384,6 +387,11 @@ const AdminUsers = () => {
                     {user.role}
                   </span>
                 </td>
+                <td>
+                  <span className={`badge ${user.active === false ? 'badge-rejected' : 'badge-approved'}`}>
+                    {user.active === false ? 'DEACTIVATED' : 'ACTIVE'}
+                  </span>
+                </td>
                 <td>{user.provider}</td>
                 <td>{formatDate(user.lastLoginAt)}</td>
                 <td>
@@ -396,12 +404,12 @@ const AdminUsers = () => {
                       <Edit2 size={14} />
                     </button>
                     <button
-                      onClick={() => handleDelete(user.id)}
-                      className="btn btn-sm btn-danger"
-                      title="Delete user"
-                      disabled={updating === user.id}
+                      onClick={() => handleUserStatusChange(user.id, user.active === false)}
+                      className={`btn btn-sm ${user.active === false ? 'btn-outline' : 'btn-danger'}`}
+                      title={user.active === false ? 'Activate user' : 'Deactivate user'}
+                      disabled={updating === user.id || !canManageActivation}
                     >
-                      <Trash2 size={14} />
+                      {user.active === false ? <UserCheck size={14} /> : <UserX size={14} />}
                     </button>
                   </div>
                 </td>

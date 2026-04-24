@@ -69,6 +69,10 @@ public class User {
     @Builder.Default
     private Role role = Role.STUDENT;
 
+    @Field("active")
+    @Builder.Default
+    private Boolean active = true;
+
     @CreatedDate
     @Field("created_at")
     private LocalDateTime createdAt;

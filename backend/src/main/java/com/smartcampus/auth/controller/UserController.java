@@ -2,7 +2,6 @@ package com.smartcampus.auth.controller;
 
 import com.smartcampus.auth.dto.AdminUserCreateRequest;
 import com.smartcampus.auth.dto.AdminUserUpdateRequest;
-import com.smartcampus.auth.dto.MessageResponse;
 import com.smartcampus.auth.dto.RoleUpdateRequest;
 import com.smartcampus.auth.dto.UserDTO;
 import com.smartcampus.auth.entity.User;
@@ -125,17 +124,21 @@ public class UserController {
     }
 
     /**
-     * Delete a user.
-     * Admin only.
-     * 
-     * @param id the user ID to delete
-     * @return Success message
+     * Activate or deactivate a user account.
+     * Admin or SuperAdmin only.
+     *
+     * @param id the user ID
+     * @param active true to activate, false to deactivate
+     * @return updated user
      */
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
-        log.info("Deleting user: {}", id);
-        userService.deleteUser(id);
-        return ResponseEntity.ok(MessageResponse.of("User deleted successfully"));
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    public ResponseEntity<UserDTO> updateUserStatus(
+            @PathVariable String id,
+            @RequestParam boolean active) {
+
+        log.info("Updating user active status for {} to {}", id, active);
+        User updatedUser = userService.setUserActive(id, active);
+        return ResponseEntity.ok(UserDTO.fromEntity(updatedUser));
     }
 }
